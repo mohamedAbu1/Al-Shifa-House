@@ -103,12 +103,7 @@ function PharmacyMark({ light = false, compact = false }: { light?: boolean; com
   return (
     <div className={compact ? "pharmacy-brand compact" : "pharmacy-brand"}>
       <span className={light ? "pharmacy-mark light" : "pharmacy-mark"} aria-hidden="true">
-        <svg viewBox="0 0 64 64" role="img">
-          <path d="M13 37c3.2 5 34.8 5 38 0v7c-3.2 6-34.8 6-38 0Z" />
-          <path d="M13 37c3.2 5 34.8 5 38 0" />
-          <path d="M32 36V16c0-5 5.6-9 10-5.8 4.3 3.1 1.8 8.5-2.1 8.5-2.4 0-4.1-2.4-2.8-4.3" />
-          <path d="M31.8 16c-4.2-1.5-7.2.2-7.2 3.1 0 2 1.7 3.3 3.7 3.3" />
-        </svg>
+        <Image src="/generated/pharmacy-emblem.png" alt="" width={compact ? 52 : 64} height={compact ? 52 : 64} className="pharmacy-emblem-image" unoptimized />
       </span>
       <span className="pharmacy-brand-copy">
         <strong>صيدلية الشفاء</strong>
