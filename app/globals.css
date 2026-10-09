@@ -68,3 +68,6 @@
 .lower-card p{font-size:13px}
 @media (max-width:860px){.feature-card p{font-size:11px}.mobile-two-cards small{font-size:11px}.mobile-tabbar button{font-size:11px}}
 @media (max-width:560px){.topbar .eyebrow{font-size:10px}.quick-action strong{font-size:12px}.feature-card p{font-size:11px}.footer-note{font-size:10px}.notice-bar{font-size:11px}}
+
+/* Keep the mobile language control in the brand row instead of showing it twice. */
+@media (max-width:860px){.topbar-actions .language-switch{display:none}}
