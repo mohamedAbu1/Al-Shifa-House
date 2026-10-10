@@ -1319,3 +1319,51 @@ html {
   .auth-quick-groups, .auth-details-grid { grid-template-columns: 1fr; }
   .auth-option-group-wide { grid-column: auto; }
 }
+
+/* Refined pharmacy select surfaces. */
+.auth-select-wrap { position: relative; }
+.auth-select-wrap .auth-select {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 42px;
+  padding-inline: 4px 30px;
+  color: var(--ink);
+  font-weight: 800;
+  cursor: pointer;
+}
+.auth-select-wrap .auth-select option {
+  color: #0b3d3e;
+  background: #ffffff;
+}
+.auth-select-chevron {
+  position: absolute;
+  inset-inline-end: 11px;
+  pointer-events: none;
+  color: var(--teal-700);
+  transition: transform .2s ease, color .2s ease;
+}
+.auth-select-wrap:hover {
+  border-color: rgba(11, 118, 112, .35);
+  background: rgba(255, 255, 255, .98);
+}
+.auth-select-wrap:focus-within .auth-select-chevron {
+  transform: rotate(180deg);
+  color: var(--mint);
+}
+.auth-select-wrap .auth-select:focus-visible { outline: none; }
+[data-theme="dark"] .auth-select-wrap:hover {
+  border-color: rgba(165, 234, 219, .4);
+  background: rgba(12, 55, 56, .92);
+}
+[data-theme="dark"] .auth-select-wrap .auth-select {
+  color: var(--ink);
+  color-scheme: dark;
+}
+[data-theme="dark"] .auth-select-wrap .auth-select option {
+  color: #eafff8;
+  background: #0b3436;
+}
+@media (max-width: 600px) {
+  .auth-select-wrap .auth-select { min-height: 46px; font-size: 13px; }
+  .auth-select-chevron { width: 18px; height: 18px; }
+}
