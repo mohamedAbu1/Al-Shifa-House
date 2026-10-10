@@ -367,7 +367,7 @@ function App() {
 
       <section id="beauty" className="content-section beauty-section">
         <div className="beauty-image-panel">
-          <Image src="/generated/health-basics-card.png" alt="منتجات عناية صحية طبيعية" width={480} height={260} />
+          <Image src="/generated/beauty-panel-bg.png" alt="منتجات عناية بالبشرة في صيدلية عصرية" width={480} height={260} />
           <div className="beauty-image-caption"><span><GeneratedIcon src="beauty-caption-3d.png" className="beauty-caption-icon" /></span><strong>جمال يبدأ من عناية واعية</strong></div>
         </div>
         <div className="beauty-content">
