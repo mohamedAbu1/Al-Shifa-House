@@ -660,3 +660,204 @@ body { transition: background .35s ease, color .35s ease; }
   .site-header .header-actions { order: 0; }
   .site-header .header-actions { margin-inline-start: 0; }
 }
+/* Immersive 3D pharmacy scene */
+@keyframes depthDrift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg); }
+  50% { transform: translate3d(-7px, -9px, 16px) rotateX(1.5deg) rotateY(-2deg); }
+}
+@keyframes depthPulse {
+  0%, 100% { opacity: .45; transform: scale(.96) translateZ(-4px); }
+  50% { opacity: .9; transform: scale(1.04) translateZ(14px); }
+}
+@keyframes depthSpin {
+  from { transform: rotateX(67deg) rotateZ(0deg) translateZ(-8px); }
+  to { transform: rotateX(67deg) rotateZ(360deg) translateZ(-8px); }
+}
+@keyframes pharmacistEnter3D {
+  from { opacity: 0; transform: translate3d(0, 28px, 0) rotateY(-7deg) scale(.96); }
+  to { opacity: 1; transform: translate3d(0, 0, 36px) rotateY(0deg) scale(1); }
+}
+@keyframes cardFloat3D {
+  0%, 100% { transform: translate3d(0, 0, 38px) rotateX(4deg) rotateY(var(--card-tilt, -7deg)); }
+  50% { transform: translate3d(0, -8px, 52px) rotateX(1deg) rotateY(var(--card-tilt, -7deg)); }
+}
+.public-hero {
+  isolation: isolate;
+  perspective: 1400px;
+  background-image: linear-gradient(115deg, rgba(4, 57, 58, .2), rgba(4, 57, 58, 0)), url("/generated/hero-pharmacy-bg.png");
+}
+.public-hero::before {
+  content: "";
+  position: absolute;
+  inset: 42% -12% -30%;
+  z-index: 0;
+  opacity: .24;
+  background-image: linear-gradient(rgba(165, 234, 219, .32) 1px, transparent 1px), linear-gradient(90deg, rgba(165, 234, 219, .32) 1px, transparent 1px);
+  background-size: 58px 58px;
+  transform: perspective(560px) rotateX(63deg);
+  transform-origin: center bottom;
+  mask-image: linear-gradient(180deg, transparent, #000 28%, transparent);
+  pointer-events: none;
+}
+.public-hero::after {
+  content: "";
+  position: absolute;
+  inset: 12% 0 auto;
+  height: 45%;
+  z-index: 0;
+  background: radial-gradient(circle at 70% 46%, rgba(165, 234, 219, .22), transparent 22%), radial-gradient(circle at 22% 72%, rgba(244, 198, 125, .14), transparent 20%);
+  pointer-events: none;
+}
+.hero-overlay { z-index: 1; }
+.hero-inner { z-index: 2; transform-style: preserve-3d; }
+.hero-copy-public { transform: translateZ(28px); }
+.hero-visual-public {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+.hero-depth-scene {
+  position: absolute;
+  inset: 7% 0 5%;
+  z-index: 0;
+  transform-style: preserve-3d;
+  animation: depthDrift 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.depth-plate {
+  position: absolute;
+  top: 13%;
+  right: 7%;
+  width: 79%;
+  height: 65%;
+  border: 1px solid rgba(165, 234, 219, .28);
+  border-radius: 32px;
+  background: linear-gradient(135deg, rgba(165, 234, 219, .18), rgba(7, 55, 56, .08) 45%, rgba(244, 198, 125, .12));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .2), 0 35px 60px rgba(0, 0, 0, .16);
+  transform: rotateY(-18deg) rotateX(7deg) translateZ(-26px);
+  transform-origin: center;
+}
+.depth-plate::before {
+  content: "";
+  position: absolute;
+  inset: 15px;
+  border: 1px solid rgba(236, 255, 250, .12);
+  border-radius: 22px;
+  background: linear-gradient(115deg, transparent 30%, rgba(165, 234, 219, .09) 50%, transparent 70%);
+}
+.depth-ring {
+  position: absolute;
+  border: 1px solid rgba(165, 234, 219, .23);
+  border-radius: 50%;
+  transform-style: preserve-3d;
+  animation: depthSpin 18s linear infinite;
+}
+.depth-ring-one { right: 4%; top: 18%; width: 68%; height: 40%; }
+.depth-ring-two { right: 13%; top: 24%; width: 50%; height: 29%; border-style: dashed; animation-duration: 11s; opacity: .7; }
+.depth-node {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--mint);
+  border-radius: 50%;
+  background: #075959;
+  box-shadow: 0 0 0 6px rgba(165, 234, 219, .1), 0 0 24px rgba(165, 234, 219, .65);
+  animation: depthPulse 3s ease-in-out infinite;
+}
+.depth-node-one { top: 19%; right: 12%; }
+.depth-node-two { bottom: 22%; left: 15%; animation-delay: 1.3s; }
+.hero-circle {
+  z-index: 1;
+  transform: translateY(-50%) translateZ(-8px) rotateX(4deg);
+  box-shadow: inset 0 0 60px rgba(165, 234, 219, .08), 0 35px 80px rgba(0, 0, 0, .11);
+}
+.hero-pharmacist {
+  transform-style: preserve-3d;
+  animation: pharmacistEnter3D 1s .35s cubic-bezier(.2, .8, .2, 1) both;
+  filter: drop-shadow(0 35px 25px rgba(0, 0, 0, .3));
+}
+.hero-floating-card {
+  --card-tilt: -7deg;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  animation-name: cardFloat3D;
+  box-shadow: 0 22px 34px rgba(0, 0, 0, .18), inset 0 1px rgba(255, 255, 255, .24);
+}
+.card-bottom { --card-tilt: 8deg; }
+.trust-strip {
+  transform-style: preserve-3d;
+  transform: translateY(-36px) rotateX(2deg);
+  box-shadow: 0 24px 46px rgba(6, 60, 61, .16);
+}
+.trust-strip > div { transform: translateZ(12px); }
+.condition-grid, .beauty-grid { perspective: 1300px; }
+.condition-card, .beauty-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+  box-shadow: 0 15px 30px rgba(6, 60, 61, .08), inset 0 1px rgba(255, 255, 255, .7);
+}
+.condition-card::before, .beauty-card::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .42), transparent 48%);
+  pointer-events: none;
+}
+.condition-card > *, .beauty-card > * { position: relative; z-index: 1; transform: translateZ(14px); }
+.condition-card:hover {
+  border-color: rgba(11, 118, 112, .35);
+  transform: translateY(-10px) rotateX(4deg) rotateY(-3deg) translateZ(8px);
+  box-shadow: 0 28px 48px rgba(6, 60, 61, .16);
+}
+.beauty-card:hover {
+  background: rgba(255, 255, 255, .9);
+  transform: translateY(-8px) rotateX(3deg) rotateY(-3deg) translateZ(8px);
+  box-shadow: 0 24px 40px rgba(6, 60, 61, .13);
+}
+.beauty-section, .natural-section, .consultation-banner {
+  transform-style: preserve-3d;
+  box-shadow: 0 26px 64px rgba(6, 60, 61, .12);
+}
+.beauty-image-panel {
+  transform: perspective(1000px) rotateY(4deg) translateZ(18px);
+  transform-style: preserve-3d;
+  box-shadow: 18px 22px 38px rgba(6, 60, 61, .13);
+}
+.natural-art { perspective: 1000px; transform-style: preserve-3d; }
+.orb-main { transform: translateZ(42px) rotate(-18deg); }
+.orb-small { transform: translateZ(60px); }
+.natural-pill { transform: translateZ(72px); }
+.consultation-banner { position: relative; overflow: hidden; }
+.consultation-banner::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgba(255, 255, 255, .42);
+  border-radius: 18px;
+  transform: translateZ(16px);
+  pointer-events: none;
+}
+[data-theme="dark"] .depth-plate { border-color: rgba(165, 234, 219, .22); background: linear-gradient(135deg, rgba(165, 234, 219, .12), rgba(4, 29, 31, .2) 52%, rgba(244, 198, 125, .08)); }
+[data-theme="dark"] .condition-card::before, [data-theme="dark"] .beauty-card::before { background: linear-gradient(135deg, rgba(165, 234, 219, .09), transparent 48%); }
+[dir="ltr"] .condition-card:hover, [dir="ltr"] .beauty-card:hover { transform: translateY(-9px) rotateX(4deg) rotateY(3deg) translateZ(8px); }
+
+@media (max-width: 760px) {
+  .public-hero { perspective: none; }
+  .public-hero::before { inset: 42% -44% -18%; opacity: .14; background-size: 42px 42px; }
+  .hero-copy-public { transform: none; }
+  .hero-depth-scene { inset: 8% -12% 4%; opacity: .72; animation-duration: 12s; transform: scale(.86); }
+  .depth-plate { right: 0; width: 96%; height: 60%; transform: rotateY(-10deg) rotateX(5deg) translateZ(-18px); }
+  .depth-ring-one { right: -3%; width: 84%; }
+  .depth-ring-two { right: 7%; width: 68%; }
+  .hero-pharmacist { animation-name: pharmacistEnter3D; }
+  .trust-strip { transform: translateY(-36px); }
+  .beauty-image-panel { transform: none; }
+  .condition-card:hover, .beauty-card:hover { transform: translateY(-4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-depth-scene, .depth-ring, .depth-node, .hero-pharmacist, .hero-floating-card { animation: none !important; }
+  .hero-pharmacist { transform: translateZ(22px); }
+  .hero-floating-card { transform: translateZ(24px); }
+  .condition-card:hover, .beauty-card:hover { transform: translateY(-3px); }
+}

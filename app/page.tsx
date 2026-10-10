@@ -318,6 +318,13 @@ function App() {
             <div className="hero-trust-row"><span><BadgeCheck size={17} /> اختيارات موثوقة</span><span><ShieldCheck size={17} /> خصوصية ووضوح</span><span><MessageCircle size={17} /> اسأل الصيدلي</span></div>
           </div>
           <div className="hero-visual-public">
+            <div className="hero-depth-scene" aria-hidden="true">
+              <span className="depth-plate" />
+              <span className="depth-ring depth-ring-one" />
+              <span className="depth-ring depth-ring-two" />
+              <span className="depth-node depth-node-one" />
+              <span className="depth-node depth-node-two" />
+            </div>
             <div className="hero-circle" />
             <Image className="hero-pharmacist" src="/generated/hero-pharmacist.png" alt="صيدلي من فريق الشفاء" width={880} height={640} priority />
             <div className="hero-floating-card card-top"><span className="floating-icon"><CircleCheck size={17} /></span><span><strong>رعاية موثوقة</strong><small>كل يوم، بخطوة أوضح</small></span></div>
