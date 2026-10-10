@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import {
   Activity,
+  Apple,
+  Baby,
   ArrowLeft,
   ArrowRight,
   BadgeCheck,
@@ -25,14 +27,15 @@ import {
   MessageCircle,
   Sun,
   PhoneCall,
-  Pill,
   Search,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
   Stethoscope,
+  TestTubeDiagonal,
+  ThermometerSnowflake,
+  ThermometerSun,
   Syringe,
-  Thermometer,
   Truck,
   UserRound,
   X,
@@ -52,11 +55,11 @@ type Tip = {
 
 const conditions = [
   { title: "الضغط والقلب", body: "متابعة واعية لضغط الدم وصحة القلب.", Icon: HeartPulse, tone: "rose" },
-  { title: "السكري", body: "منتجات ومعلومات تساعدك على روتين متوازن.", Icon: Activity, tone: "blue" },
-  { title: "البرد والحساسية", body: "راحة موسمية وإرشادات للاستخدام الآمن.", Icon: Thermometer, tone: "orange" },
-  { title: "الجهاز الهضمي", body: "حلول يومية لطيفة للهضم والراحة.", Icon: Droplets, tone: "mint" },
-  { title: "الألم والحرارة", body: "اختيارات واضحة مع سؤال الصيدلي أولًا.", Icon: Pill, tone: "purple" },
-  { title: "العناية بالأطفال", body: "عناية موثوقة تناسب احتياجات العائلة.", Icon: ShieldCheck, tone: "sky" },
+  { title: "السكري", body: "منتجات ومعلومات تساعدك على روتين متوازن.", Icon: TestTubeDiagonal, tone: "blue" },
+  { title: "البرد والحساسية", body: "راحة موسمية وإرشادات للاستخدام الآمن.", Icon: ThermometerSnowflake, tone: "orange" },
+  { title: "الجهاز الهضمي", body: "حلول يومية لطيفة للهضم والراحة.", Icon: Apple, tone: "mint" },
+  { title: "الألم والحرارة", body: "اختيارات واضحة مع سؤال الصيدلي أولًا.", Icon: ThermometerSun, tone: "purple" },
+  { title: "العناية بالأطفال", body: "عناية موثوقة تناسب احتياجات العائلة.", Icon: Baby, tone: "sky" },
 ];
 
 const beautyItems = [
@@ -110,7 +113,7 @@ type Theme = "light" | "dark";
 
 const translationPairs: Array<[string, string]> = [
   ["صيدلية الشفاء", "Al-Shifa Pharmacy"], ["رعاية أقرب إليك", "Care, closer to you"], ["صحة أفضل تبدأ بخطوة واعية", "A healthier life starts with a mindful step"], ["مفتوح لخدمتك", "Open to serve you"], ["مفتوحة 24/7", "Open 24/7"], ["خدمة على مدار الساعة", "Round-the-clock service"], ["أهلًا بك في", "Welcome to"], ["رعاية موثوقة، إرشاد واضح، واختيارات صحية أقرب إلى حياتك اليومية.", "Trusted care, clear guidance, and healthier choices for everyday life."], ["اكتشف خدمات الشفاء", "Discover Al-Shifa services"], ["معلومات عامة موثوقة مع احترام خصوصيتك", "Reliable general information with respect for your privacy"], ["نعتني بالتفاصيل الصغيرة التي تصنع فرقًا", "We care about the small details that make a difference"], ["دارك الصحي يبدأ من هنا", "Your health journey starts here"],
-  ["الرئيسية", "Home"], ["الحالات الصحية", "Health conditions"], ["العناية والجمال", "Beauty & care"], ["إرشادات طبية", "Medical guidance"], ["الإرشادات الطبية", "Medical guidance"], ["العلاج البديل", "Alternative care"], ["فتح القائمة", "Open menu"], ["إغلاق القائمة", "Close menu"], ["البحث", "Search"], ["تسجيل الدخول", "Sign in"], ["العودة إلى الصفحة الرئيسية", "Back to home"], ["سيتم تفعيل البحث قريبًا", "Search will be available soon"], ["تسجيل الدخول سيكون متاحًا قريبًا", "Sign in will be available soon"],
+  ["توصيل إلى باب البيت", "Doorstep delivery"], ["بأقرب وقت", "As soon as possible"], ["الرئيسية", "Home"], ["الحالات الصحية", "Health conditions"], ["العناية والجمال", "Beauty & care"], ["إرشادات طبية", "Medical guidance"], ["الإرشادات الطبية", "Medical guidance"], ["العلاج البديل", "Alternative care"], ["فتح القائمة", "Open menu"], ["إغلاق القائمة", "Close menu"], ["البحث", "Search"], ["تسجيل الدخول", "Sign in"], ["العودة إلى الصفحة الرئيسية", "Back to home"], ["سيتم تفعيل البحث قريبًا", "Search will be available soon"], ["تسجيل الدخول سيكون متاحًا قريبًا", "Sign in will be available soon"],
   ["رعاية صحية بطابع إنساني", "Human-centered healthcare"], ["صحتك أولًا،", "Your health comes first,"], ["والاختيار أسهل.", "and choosing is easier."], ["من العلاجات اليومية إلى العناية الطبيعية، نساعدك على اتخاذ قرار صحي أوضح مع إرشاد صيدلي موثوق.", "From everyday treatments to natural care, we help you make clearer health decisions with trusted pharmacy guidance."], ["تصفح الأقسام", "Explore sections"], ["اقرأ إرشاداتنا", "Read our guidance"], ["اختيارات موثوقة", "Trusted choices"], ["خصوصية ووضوح", "Privacy & clarity"], ["اسأل الصيدلي", "Ask the pharmacist"], ["رعاية موثوقة", "Trusted care"], ["كل يوم، بخطوة أوضح", "Every day, one clearer step"], ["اختيارات بعناية", "Carefully selected"], ["لروتينك الصحي", "For your health routine"],
   ["إرشاد صيدلي", "Pharmacy guidance"], ["معلومة مفهومة قبل الاختيار", "Clear information before you choose"], ["خدمة قريبة", "Care close to home"], ["تجربة سهلة من مكان واحد", "An easy experience in one place"], ["طبيعي بوعي", "Natural care, with awareness"], ["لا نخلط الطبيعي بالآمن تلقائيًا", "Natural does not always mean safe"], ["وضوح وخصوصية", "Clarity & privacy"], ["معلوماتك وقرارك في أمان", "Your information and choice stay safe"],
   ["اختيارات تبدأ من احتياجك", "Care tailored to your needs"], ["علاجات الحالات الصحية الشائعة", "Treatments for common health conditions"], ["تعرّف على الأقسام التي تساعدك في روتينك اليومي، واسأل الصيدلي قبل بدء أي علاج جديد.", "Explore sections that support your daily routine, and ask the pharmacist before starting any new treatment."], ["استكشف القسم", "Explore section"], ["سيتم تجهيز قسم ", "The "] , [" قريبًا", " section will be available soon"],
@@ -142,6 +145,14 @@ function AvailabilityBadge({ compact = false, language }: { compact?: boolean; l
       <span className="availability-dot" aria-hidden="true" />
       <span className="availability-icon"><Clock size={compact ? 15 : 17} /></span>
       <span className="availability-copy"><strong>{language === "ar" ? "مفتوحة 24/7" : "Open 24/7"}</strong><small>{language === "ar" ? "خدمة على مدار الساعة" : "Round-the-clock service"}</small></span>
+    </span>
+  );
+}
+function DeliveryBadge({ compact = false, language }: { compact?: boolean; language: Language }) {
+  return (
+    <span className={compact ? "delivery-badge compact" : "delivery-badge"} aria-label={language === "ar" ? "توصيل إلى باب البيت" : "Doorstep delivery"}>
+      <span className="delivery-icon"><Truck size={compact ? 16 : 20} /></span>
+      <span className="delivery-copy"><strong>{language === "ar" ? "توصيل إلى باب البيت" : "Doorstep delivery"}</strong><small>{language === "ar" ? "بأقرب وقت" : "As soon as possible"}</small></span>
     </span>
   );
 }
@@ -300,6 +311,7 @@ function App() {
           </nav>
           <div className="header-actions">
             <AvailabilityBadge language={language} />
+            <DeliveryBadge compact language={language} />
             <div className="header-utility-row">
               <button className="header-theme-toggle" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"} title={theme === "light" ? "Dark mode" : "Light mode"}>{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}</button>
               <button className={languageSwitching ? "language-toggle is-switching" : "language-toggle"} type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"} title={language === "ar" ? "English" : "العربية"}><Languages size={16} /><span>{language === "ar" ? "EN" : "عربي"}</span></button>
@@ -322,6 +334,7 @@ function App() {
               <button className="button-ghost" type="button" onClick={() => goTo("tips")}><BookOpen size={18} /> اقرأ إرشاداتنا</button>
             </div>
             <div className="hero-trust-row"><span><BadgeCheck size={17} /> اختيارات موثوقة</span><span><ShieldCheck size={17} /> خصوصية ووضوح</span><span><MessageCircle size={17} /> اسأل الصيدلي</span></div>
+            <DeliveryBadge language={language} />
           </div>
           <div className="hero-visual-public">
             <div className="hero-depth-scene" aria-hidden="true">
