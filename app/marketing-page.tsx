@@ -6,16 +6,18 @@ import { useEffect, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
+  Activity,
   BadgeCheck,
+  BookOpen,
   Building2,
   CalendarDays,
   CheckCircle2,
   Clock3,
   Globe2,
-  HeartPulse,
   Home,
   Info,
   Languages,
+  Leaf,
   Mail,
   MapPin,
   MessageCircle,
@@ -88,6 +90,10 @@ export function MarketingPage({ kind }: { kind: MarketingPageKind }) {
 
   const navItems = [
     { href: "/", label: isArabic ? "الرئيسية" : "Home", icon: Home },
+    { href: "/#conditions", label: isArabic ? "الحالات الصحية" : "Health conditions", icon: Activity },
+    { href: "/#beauty", label: isArabic ? "العناية والجمال" : "Beauty & care", icon: Sparkles },
+    { href: "/#tips", label: isArabic ? "إرشادات طبية" : "Medical guidance", icon: BookOpen },
+    { href: "/#natural", label: isArabic ? "العلاج البديل" : "Alternative care", icon: Leaf },
     { href: "/about", label: isArabic ? "عن الصيدلية" : "About us", icon: Info, active: kind === "about" },
     { href: "/contact", label: isArabic ? "تواصل معنا" : "Contact", icon: MessageCircle, active: kind === "contact" },
   ];
@@ -107,7 +113,6 @@ export function MarketingPage({ kind }: { kind: MarketingPageKind }) {
         <MarketingBrand language={language} light />
         <nav className="marketing-nav" aria-label={isArabic ? "تنقل الصفحات" : "Page navigation"}>
           {navItems.map(({ href, label, icon: Icon, active }) => <Link className={active ? "active" : ""} href={href} key={href}><Icon size={18} /><span>{label}</span></Link>)}
-          <Link href={kind === "about" ? "/#conditions" : "/#dashboard"}><HeartPulse size={18} /><span>{isArabic ? "الخدمات الصحية" : "Health services"}</span></Link>
         </nav>
         <div className="marketing-sidebar-bottom">
           <MarketingAvailability language={language} />
