@@ -14,10 +14,13 @@ import {
   Flower2,
   HeartPulse,
   Leaf,
+  Languages,
   Mail,
+  Moon,
   MapPin,
   Menu,
   MessageCircle,
+  Sun,
   PhoneCall,
   Pill,
   Search,
@@ -99,6 +102,23 @@ const tips: Tip[] = [
   },
 ];
 
+type Language = "ar" | "en";
+type Theme = "light" | "dark";
+
+const translationPairs: Array<[string, string]> = [
+  ["صيدلية الشفاء", "Al-Shifa Pharmacy"], ["رعاية أقرب إليك", "Care, closer to you"], ["صحة أفضل تبدأ بخطوة واعية", "Better health starts with a mindful step"], ["مفتوح لخدمتك", "Open to serve you"], ["أهلًا بك في", "Welcome to"], ["رعاية موثوقة، إرشاد واضح، واختيارات صحية أقرب إلى حياتك اليومية.", "Trusted care, clear guidance, and healthier choices for everyday life."], ["اكتشف خدمات الشفاء", "Discover Al-Shifa services"], ["معلومات عامة موثوقة مع احترام خصوصيتك", "Reliable general information with respect for your privacy"], ["نعتني بالتفاصيل الصغيرة التي تصنع فرقًا", "We care about the small details that make a difference"], ["دارك الصحي يبدأ من هنا", "Your health journey starts here"],
+  ["الحالات الصحية", "Health conditions"], ["العناية والجمال", "Beauty & care"], ["إرشادات طبية", "Medical guidance"], ["الإرشادات الطبية", "Medical guidance"], ["العلاج البديل", "Alternative care"], ["فتح القائمة", "Open menu"], ["إغلاق القائمة", "Close menu"], ["البحث", "Search"], ["تسجيل الدخول", "Sign in"], ["العودة إلى الصفحة الرئيسية", "Back to home"], ["سيتم تفعيل البحث قريبًا", "Search will be available soon"], ["تسجيل الدخول سيكون متاحًا قريبًا", "Sign in will be available soon"],
+  ["رعاية صحية بطابع إنساني", "Human-centered healthcare"], ["صحتك أولًا،", "Your health comes first,"], ["والاختيار أسهل.", "and choosing is easier."], ["من العلاجات اليومية إلى العناية الطبيعية، نساعدك على اتخاذ قرار صحي أوضح مع إرشاد صيدلي موثوق.", "From everyday treatments to natural care, we help you make clearer health decisions with trusted pharmacy guidance."], ["تصفح الأقسام", "Explore sections"], ["اقرأ إرشاداتنا", "Read our guidance"], ["اختيارات موثوقة", "Trusted choices"], ["خصوصية ووضوح", "Privacy & clarity"], ["اسأل الصيدلي", "Ask the pharmacist"], ["رعاية موثوقة", "Trusted care"], ["كل يوم، بخطوة أوضح", "Every day, one clearer step"], ["اختيارات بعناية", "Thoughtfully chosen"], ["لروتينك الصحي", "For your health routine"],
+  ["إرشاد صيدلي", "Pharmacy guidance"], ["معلومة مفهومة قبل الاختيار", "Clear information before choosing"], ["خدمة قريبة", "Care nearby"], ["تجربة سهلة من مكان واحد", "An easy experience in one place"], ["طبيعي بوعي", "Natural, with awareness"], ["لا نخلط الطبيعي بالآمن تلقائيًا", "Natural does not always mean safe"], ["وضوح وخصوصية", "Clarity & privacy"], ["معلوماتك وقرارك في أمان", "Your information and choice stay safe"],
+  ["اختيارات تبدأ من احتياجك", "Choices that start with your needs"], ["علاجات الحالات الصحية الشائعة", "Treatments for common health conditions"], ["تعرّف على الأقسام التي تساعدك في روتينك اليومي، واسأل الصيدلي قبل بدء أي علاج جديد.", "Explore sections that support your daily routine, and ask the pharmacist before starting any new treatment."], ["استكشف القسم", "Explore section"], ["سيتم تجهيز قسم ", "The "] , [" قريبًا", " section will be ready soon"],
+  ["الضغط والقلب", "Blood pressure & heart"], ["متابعة واعية لضغط الدم وصحة القلب.", "Mindful support for blood pressure and heart health."], ["السكري", "Diabetes"], ["منتجات ومعلومات تساعدك على روتين متوازن.", "Products and information for a balanced routine."], ["البرد والحساسية", "Colds & allergies"], ["راحة موسمية وإرشادات للاستخدام الآمن.", "Seasonal relief and safe-use guidance."], ["الجهاز الهضمي", "Digestive health"], ["حلول يومية لطيفة للهضم والراحة.", "Gentle everyday support for digestion and comfort."], ["الألم والحرارة", "Pain & fever"], ["اختيارات واضحة مع سؤال الصيدلي أولًا.", "Clear choices with a pharmacist question first."], ["العناية بالأطفال", "Child care"], ["عناية موثوقة تناسب احتياجات العائلة.", "Trusted care for your family’s needs."],
+  ["جمال يبدأ من عناية واعية", "Beauty starts with mindful care"], ["روتينك اليومي", "Your daily routine"], ["اختيارات لطيفة", "Gentle choices"], ["طبيعي بعناية", "Natural, thoughtfully"], ["أسلوب صحي", "Healthy style"], ["اختياراتك الطبيعية، بأسلوب أهدأ", "Your natural choices, made calmer"], ["منتجات للعناية بالبشرة والشعر والزيوت الطبيعية والإكسسوارات الصحية، مع وصف واضح يساعدك على الاختيار.", "Products for skin, hair, natural oils, and wellness accessories, with clear descriptions to guide your choice."], ["شاهد كل الاختيارات", "See all choices"],
+  ["عناية البشرة", "Skin care"], ["روتين يومي بسيط لبشرة أكثر نضارة.", "A simple daily routine for fresher-looking skin."], ["العناية بالشعر", "Hair care"], ["منتجات مختارة للعناية بفروة الرأس والشعر.", "Selected products for scalp and hair care."], ["الزيوت الطبيعية", "Natural oils"], ["زيوت نقية للاستخدام الخارجي والعناية الشخصية.", "Pure oils for external use and personal care."], ["إكسسوارات صحية", "Wellness accessories"], ["تفاصيل صغيرة تجعل يومك الصحي أسهل.", "Small details that make your health routine easier."], ["سيتم فتح ", "Opening "], ["سيتم عرض المنتجات قريبًا", "Products will be shown soon"],
+  ["نبض المعرفة", "Knowledge pulse"], ["إرشادات طبية مهمة", "Important medical guidance"], ["معلومات مختصرة من مصادر صحية رسمية، لتساعدك على السؤال الصحيح في الوقت المناسب.", "Brief information from official health sources to help you ask the right question at the right time."], ["الإرشاد السابق", "Previous guidance"], ["الإرشاد التالي", "Next guidance"], ["المصدر: ", "Source: "], ["عرض إرشاد ", "Show guidance "],
+  ["ضغط الدم", "Blood pressure"], ["الضغط المرتفع قد لا يسبب أعراضًا واضحة", "High blood pressure may have no obvious symptoms"], ["القياس المنتظم لدى مختص أو بجهاز موثوق هو الطريقة الأفضل لاكتشاف ارتفاع الضغط ومتابعته.", "Regular checks by a professional or with a reliable device are the best way to detect and monitor high blood pressure."], ["منظمة الصحة العالمية", "World Health Organization"], ["الاستخدام الآمن", "Safe use"], ["المضاد الحيوي لا يعالج نزلات البرد الفيروسية", "Antibiotics do not treat viral colds"], ["لا تستخدم المضادات الحيوية من نفسك؛ فهي مخصصة لعدوى بكتيرية محددة وقد تسبب آثارًا جانبية عند استخدامها بلا حاجة.", "Do not self-medicate with antibiotics; they target specific bacterial infections and can cause side effects when unnecessary."], ["مراكز مكافحة الأمراض CDC", "Centers for Disease Control and Prevention (CDC)"], ["الحركة والغذاء المتوازن جزء من رعاية السكري", "Movement and balanced food support diabetes care"], ["النشاط البدني المنتظم والغذاء الصحي يساعدان على الوقاية من السكري من النوع الثاني وتقليل مضاعفاته مع المتابعة الطبية.", "Regular activity and healthy food can help prevent type 2 diabetes and reduce complications alongside medical care."], ["الأعشاب والمكملات", "Herbs & supplements"], ["طبيعي لا يعني آمنًا للجميع", "Natural does not mean safe for everyone"], ["قد تتداخل الأعشاب والمكملات مع الأدوية أو تؤثر في فعاليتها؛ أخبر طبيبك أو الصيدلي بكل ما تتناوله.", "Herbs and supplements can interact with medicines or affect their action; tell your doctor or pharmacist everything you take."], ["هيئة الغذاء والدواء FDA", "Food and Drug Administration (FDA)"],
+  ["توازن من الطبيعة", "Balance from nature"], ["العلاج البديل", "Alternative care"], ["بعلم ومسؤولية", "with science and responsibility"], ["نعرّفك على الأعشاب والمكملات كجزء من حوار صحي متكامل، لا كبديل عن وصفة الطبيب أو المتابعة اللازمة.", "We introduce herbs and supplements as part of a complete health conversation—not a replacement for a doctor’s prescription or necessary follow-up."], ["مراجعة التداخلات الدوائية", "Review medicine interactions"], ["اختيار مصادر موثوقة", "Choose trusted sources"], ["سؤال الصيدلي قبل الاستخدام", "Ask the pharmacist before use"], ["استكشف الدليل", "Explore the guide"], ["اعرف التداخلات", "Know the interactions"], ["لا توقف دواءك بنفسك", "Never stop your medicine on your own"], ["سيتم فتح دليل العلاج البديل قريبًا", "The alternative-care guide will be available soon"],
+  ["تحتاج إجابة واضحة؟", "Need a clear answer?"], ["اسأل الصيدلي قبل أن تحتار.", "Ask the pharmacist before you wonder."], ["خطوة صغيرة من السؤال قد تجعل اختيارك الصحي أكثر أمانًا.", "One small question can make your health choice safer."], ["تواصل معنا", "Contact us"], ["سيتم تفعيل الاستشارة قريبًا", "Consultation will be available soon"], ["في صيدلية الشفاء، نؤمن أن الرعاية الصحية تبدأ من معلومة واضحة وقلب حاضر.", "At Al-Shifa Pharmacy, we believe healthcare starts with clear information and a caring presence."], ["روابط سريعة", "Quick links"], ["خدمات الشفاء", "Al-Shifa services"], ["رفع وصفة طبية", "Upload a prescription"], ["سيتم تفعيل رفع الوصفة قريبًا", "Prescription upload will be available soon"], ["توصيل إلى المنزل", "Home delivery"], ["سيتم تفعيل التوصيل قريبًا", "Delivery will be available soon"], ["استشارة صيدلي", "Pharmacist consultation"], ["القاهرة، مصر", "Cairo, Egypt"], ["جميع الحقوق محفوظة.", "All rights reserved."], ["هذه المعلومات للتوعية ولا تغني عن استشارة الطبيب.", "This information is educational and does not replace medical advice."], ["إغلاق التنبيه", "Dismiss notification"],
+];
 function PharmacyMark({ light = false, compact = false }: { light?: boolean; compact?: boolean }) {
   return (
     <div className={compact ? "pharmacy-brand compact" : "pharmacy-brand"}>
@@ -128,6 +148,22 @@ function App() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [tipIndex, setTipIndex] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
+  const [language, setLanguage] = useState<Language>(() => {
+    if (typeof window === "undefined") return "ar";
+    try {
+      return window.localStorage.getItem("al-shifa-language") === "en" ? "en" : "ar";
+    } catch {
+      return "ar";
+    }
+  });
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "light";
+    try {
+      return window.localStorage.getItem("al-shifa-theme") === "dark" ? "dark" : "light";
+    } catch {
+      return "light";
+    }
+  });
 
   useEffect(() => {
     let timer: number | undefined;
@@ -173,14 +209,43 @@ function App() {
   const nextTip = () => setTipIndex((current) => (current + 1) % tips.length);
   const previousTip = () => setTipIndex((current) => (current - 1 + tips.length) % tips.length);
 
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
+    document.documentElement.dataset.theme = theme;
+    try {
+        window.localStorage.setItem("al-shifa-language", language);
+        window.localStorage.setItem("al-shifa-theme", theme);
+    } catch {
+      // Preferences remain available for the current session.
+    }
+    const timer = window.setTimeout(() => {
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const nodes: Text[] = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+      const pairs = [...(language === "en" ? translationPairs : translationPairs.map(([arabic, english]) => [english, arabic] as [string, string]))].sort(([fromA], [fromB]) => fromB.length - fromA.length);
+      nodes.forEach((node) => {
+        let value = node.nodeValue ?? "";
+        pairs.forEach(([from, to]) => {
+          if (from) value = value.split(from).join(to);
+        });
+        node.nodeValue = value;
+      });
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [language, theme, tipIndex, toast, welcomeVisible]);
+
+  const toggleLanguage = () => setLanguage((current) => (current === "ar" ? "en" : "ar"));
+  const toggleTheme = () => setTheme((current) => (current === "light" ? "dark" : "light"));
+
   if (welcomeVisible) {
     return (
-      <main className="welcome-screen" dir="rtl">
+      <main className="welcome-screen" dir={language === "ar" ? "rtl" : "ltr"} data-theme={theme}>
         <div className="welcome-backdrop" />
         <div className="welcome-glow glow-one" />
         <div className="welcome-glow glow-two" />
         <div className="welcome-content">
-          <div className="welcome-topline"><span>صحة أفضل تبدأ بخطوة واعية</span><span className="welcome-status"><CircleCheck size={15} /> مفتوح لخدمتك</span></div>
+          <div className="welcome-topline"><span>صحة أفضل تبدأ بخطوة واعية</span><span className="welcome-status"><CircleCheck size={15} /> مفتوح لخدمتك</span><span className="welcome-preferences"><button className="welcome-control" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"}>{theme === "light" ? <Moon size={15} /> : <Sun size={15} />}</button><button className="welcome-control welcome-language" type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"}><Languages size={14} /><span>{language === "ar" ? "EN" : "عربي"}</span></button></span></div>
           <div className="welcome-center">
             <div className="welcome-logo-wrap"><PharmacyMark light /></div>
             <span className="welcome-kicker">أهلًا بك في</span>
@@ -196,7 +261,7 @@ function App() {
   }
 
   return (
-    <main className="site-shell" dir="rtl">
+    <main className="site-shell" dir={language === "ar" ? "rtl" : "ltr"} data-theme={theme}>
       <div className="site-background" aria-hidden="true" />
       <header className="site-header">
         <div className="header-inner">
@@ -210,6 +275,8 @@ function App() {
             <button type="button" onClick={() => goTo("natural")}>العلاج البديل</button>
           </nav>
           <div className="header-actions">
+            <button className="header-theme-toggle" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"} title={theme === "light" ? "Dark mode" : "Light mode"}>{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}</button>
+            <button className="language-toggle" type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"} title={language === "ar" ? "English" : "العربية"}><Languages size={16} /><span>{language === "ar" ? "EN" : "عربي"}</span></button>
             <button className="header-search" type="button" aria-label="البحث" onClick={() => showToast("سيتم تفعيل البحث قريبًا")}><Search size={19} /></button>
             <button className="header-login" type="button" onClick={() => showToast("تسجيل الدخول سيكون متاحًا قريبًا")}><UserRound size={17} /> تسجيل الدخول</button>
           </div>

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "دار الدواء — رعايتك الصحية بين أيدي أهل الخبرة",
-  description: "مساحتك الصحية لإدارة الوصفات ومواعيد الجرعات والاستشارة الصيدلية.",
+  title: "صيدلية الشفاء — رعاية أقرب إليك",
+  description: "رعاية صيدلية موثوقة، إرشادات طبية واضحة، وعناية أقرب إلى حياتك اليومية.",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
 };
 
