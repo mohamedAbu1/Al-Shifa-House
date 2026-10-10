@@ -326,7 +326,6 @@ function App() {
               <button className="button-ghost" type="button" onClick={() => goTo("tips")}><BookOpen size={18} /> اقرأ إرشاداتنا</button>
             </div>
             <div className="hero-trust-row"><span><BadgeCheck size={17} /> اختيارات موثوقة</span><span><ShieldCheck size={17} /> خصوصية ووضوح</span><span><MessageCircle size={17} /> اسأل الصيدلي</span></div>
-            <DeliveryBadge language={language} />
           </div>
           <div className="hero-visual-public">
             <div className="hero-depth-scene" aria-hidden="true">
@@ -369,7 +368,7 @@ function App() {
       <section id="beauty" className="content-section beauty-section">
         <div className="beauty-image-panel">
           <Image src="/generated/health-basics-card.png" alt="منتجات عناية صحية طبيعية" width={480} height={260} />
-          <div className="beauty-image-caption"><span><GeneratedIcon src="beauty-care-3d.png" className="beauty-caption-icon" /></span><strong>جمال يبدأ من عناية واعية</strong></div>
+          <div className="beauty-image-caption"><span><GeneratedIcon src="beauty-caption-3d.png" className="beauty-caption-icon" /></span><strong>جمال يبدأ من عناية واعية</strong></div>
         </div>
         <div className="beauty-content">
           <SectionHeading eyebrow="العناية والجمال" title="اختياراتك الطبيعية، بأسلوب أهدأ" body="منتجات للعناية بالبشرة والشعر والزيوت الطبيعية والإكسسوارات الصحية، مع وصف واضح يساعدك على الاختيار." />

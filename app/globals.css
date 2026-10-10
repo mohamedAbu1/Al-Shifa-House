@@ -1161,3 +1161,12 @@ html {
   .natural-art-icon { width: 220px; height: 220px; margin: -10px; }
   .natural-drop-icon { width: 78px; height: 78px; margin: -2px; }
 }
+/* Keep the beauty caption asset visible inside the cropped image panel */
+.beauty-image-caption .generated-3d-icon {
+  position: relative;
+  z-index: 3;
+}
+.beauty-image-caption .generated-3d-icon img {
+  min-height: 0;
+  object-fit: contain;
+}
