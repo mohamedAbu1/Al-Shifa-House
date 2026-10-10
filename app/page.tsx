@@ -289,7 +289,7 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
     conditionError: "اختر مرضًا مزمنًا واحدًا على الأقل أو اختر «لا». ",
     whatsappError: "يرجى تأكيد أن رقم الهاتف متصل بواتساب.",
     submit: "حفظ البيانات والمتابعة",
-    success: "تم حفظ ملفك الصحي بنجاح. يمكنك العودة لتحديث بياناتك في أي وقت.",
+    success: "تم حفظ ملفك الصحي بنجاح. جارٍ فتح لوحة الصيدلية...",
     consentError: "يرجى الموافقة على ملاحظة الاستخدام قبل المتابعة.",
     authStatus: "الحساب متصل وآمن",
     authStatusAnonymous: "سجّل الدخول لحفظ ملفك الصحي",
@@ -346,7 +346,7 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
     conditionError: "Select at least one chronic condition, or choose No.",
     whatsappError: "Please confirm that this phone number is connected to WhatsApp.",
     submit: "Save details and continue",
-    success: "Your health profile was saved successfully. You can return and update it anytime.",
+    success: "Your health profile was saved successfully. Opening your pharmacy dashboard...",
     consentError: "Please accept the information-use notice before continuing.",
     authStatus: "Account connected securely",
     authStatusAnonymous: "Sign in to save your health profile",
@@ -452,6 +452,10 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
         return;
       }
       setSubmitted(true);
+      window.setTimeout(() => {
+        window.history.replaceState({}, "", "/");
+        onBack();
+      }, 950);
     } catch {
       setError(copy.saveError);
     } finally {
@@ -718,6 +722,42 @@ function App() {
         <div><span className="trust-icon"><GeneratedIcon src="delivery-3d.png" /></span><span><strong>خدمة قريبة</strong><small>تجربة سهلة من مكان واحد</small></span></div>
         <div><span className="trust-icon"><GeneratedIcon src="trust-natural-3d.png" /></span><span><strong>طبيعي بوعي</strong><small>لا نخلط الطبيعي بالآمن تلقائيًا</small></span></div>
         <div><span className="trust-icon"><GeneratedIcon src="trust-privacy-3d.png" /></span><span><strong>وضوح وخصوصية</strong><small>معلوماتك وقرارك في أمان</small></span></div>
+      </section>
+
+      <section id="dashboard" className="dashboard-section content-section">
+        <div className="dashboard-heading">
+          <div>
+            <span className="section-eyebrow">{language === "ar" ? "لوحة الشفاء" : "Al-Shifa dashboard"}</span>
+            <h2>{language === "ar" ? "رعايتك الصحية بين يديك" : "Your care, beautifully organized"}</h2>
+            <p>{language === "ar" ? "نظّم وصفاتك ومواعيدك واسأل الصيدلي من مساحة واحدة واضحة." : "Organize prescriptions, medication times, and pharmacist guidance in one clear space."}</p>
+          </div>
+          <button className="dashboard-profile-cta" type="button" onClick={() => { setAuthVisible(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}><UserRound size={18} /> <span>{language === "ar" ? "فتح ملفي الصحي" : "Open my health profile"}</span><DirectionArrow size={17} /></button>
+        </div>
+        <div className="dashboard-card-grid">
+          <button className="dashboard-card dashboard-card-prescriptions" type="button" onClick={() => showToast(language === "ar" ? "سيتم عرض وصفاتك الطبية هنا قريبًا" : "Your prescriptions will appear here soon")}>
+            <span className="dashboard-card-content"><span className="dashboard-card-icon"><ClipboardList size={21} /></span><strong>{language === "ar" ? "وصفاتي الطبية" : "My prescriptions"}</strong><small>{language === "ar" ? "كل وصفاتك في مكان واحد مع إرشاد الصيدلي." : "All your prescriptions in one place, with pharmacist guidance."}</small><span className="dashboard-card-link">{language === "ar" ? "عرض الوصفات" : "View prescriptions"} <DirectionArrow size={15} /></span></span>
+            <GeneratedIcon src="prescription-card.png" className="dashboard-card-art" />
+          </button>
+          <button className="dashboard-card dashboard-card-schedule" type="button" onClick={() => showToast(language === "ar" ? "سيتم تفعيل تذكيرات الجرعات قريبًا" : "Dose reminders will be available soon")}>
+            <span className="dashboard-card-content"><span className="dashboard-card-icon"><CalendarDays size={21} /></span><strong>{language === "ar" ? "مواعيد الجرعات" : "Medication times"}</strong><small>{language === "ar" ? "تذكيرات بسيطة تساعدك على الاستخدام المنتظم." : "Simple reminders to help you stay consistent."}</small><span className="dashboard-schedule-list"><span><b>08:00</b><em>{language === "ar" ? "جرعة الصباح" : "Morning dose"}</em><CircleCheck size={14} /></span><span><b>14:00</b><em>{language === "ar" ? "جرعة الظهر" : "Midday dose"}</em><CircleCheck size={14} /></span><span><b>20:00</b><em>{language === "ar" ? "جرعة المساء" : "Evening dose"}</em><CircleCheck size={14} /></span></span></span>
+          </button>
+          <button className="dashboard-card dashboard-card-consult" type="button" onClick={() => showToast(language === "ar" ? "سيتم تفعيل الاستشارة الصيدلية قريبًا" : "Pharmacist consultation will be available soon")}>
+            <span className="dashboard-card-content"><span className="dashboard-card-icon"><MessageCircle size={21} /></span><strong>{language === "ar" ? "اسأل الصيدلي" : "Ask the pharmacist"}</strong><small>{language === "ar" ? "احصل على إجابات صحية موثوقة من صيدلي مختص." : "Get trusted health answers from a qualified pharmacist."}</small><span className="dashboard-card-link">{language === "ar" ? "ابدأ الاستشارة" : "Start consultation"} <DirectionArrow size={15} /></span></span>
+            <GeneratedIcon src="ask-pharmacist-card.png" className="dashboard-card-art" />
+          </button>
+          <button className="dashboard-card dashboard-card-profile" type="button" onClick={() => { setAuthVisible(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
+            <span className="dashboard-card-content"><span className="dashboard-card-icon"><UserRound size={21} /></span><strong>{language === "ar" ? "ملفي الصحي" : "My health profile"}</strong><small>{language === "ar" ? "بياناتك الصحية المهمة للمساعدة بشكل أفضل." : "The health details that help us support you better."}</small><span className="dashboard-card-link">{language === "ar" ? "تحديث الملف" : "Update profile"} <DirectionArrow size={15} /></span></span>
+            <GeneratedIcon src="health-profile-card.png" className="dashboard-card-art" />
+          </button>
+        </div>
+        <div className="dashboard-bottom-grid">
+          <button className="dashboard-wide-card dashboard-delivery-card" type="button" onClick={() => showToast(language === "ar" ? "سيتم تفعيل التوصيل إلى المنزل قريبًا" : "Home delivery will be available soon")}>
+            <span><span className="dashboard-wide-icon"><GeneratedIcon src="delivery-card.png" /></span><strong>{language === "ar" ? "توصيل إلى المنزل" : "Delivery to your door"}</strong><small>{language === "ar" ? "استلم احتياجاتك بسهولة وأمان." : "Receive your essentials with ease and care."}</small></span><DirectionArrow size={21} />
+          </button>
+          <button className="dashboard-wide-card dashboard-basics-card" type="button" onClick={() => goTo("tips")}>
+            <span><span className="dashboard-wide-icon"><GeneratedIcon src="health-basics-card.png" /></span><strong>{language === "ar" ? "أساسيات صحية موصى بها" : "Recommended health basics"}</strong><small>{language === "ar" ? "نصائح مختارة لدعم نمط حياتك الصحي." : "Selected tips to support your healthy routine."}</small></span><DirectionArrow size={21} />
+          </button>
+        </div>
       </section>
 
       <section id="conditions" className="content-section conditions-section">
