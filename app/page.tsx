@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, type ComponentType } from "react";
 import {
   Activity,
   ArrowLeft,
+  ArrowRight,
   BadgeCheck,
   BookOpen,
   ChevronLeft,
@@ -158,22 +159,25 @@ function App() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [tipIndex, setTipIndex] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
-  const [language, setLanguage] = useState<Language>(() => {
-    if (typeof window === "undefined") return "ar";
-    try {
-      return window.localStorage.getItem("al-shifa-language") === "en" ? "en" : "ar";
-    } catch {
-      return "ar";
-    }
-  });
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "light";
-    try {
-      return window.localStorage.getItem("al-shifa-theme") === "dark" ? "dark" : "light";
-    } catch {
-      return "light";
-    }
-  });
+  const [language, setLanguage] = useState<Language>("ar");
+  const [theme, setTheme] = useState<Theme>("light");
+  const [preferencesReady, setPreferencesReady] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      try {
+        const savedLanguage = window.localStorage.getItem("al-shifa-language");
+        const savedTheme = window.localStorage.getItem("al-shifa-theme");
+        if (savedLanguage === "en") setLanguage("en");
+        if (savedTheme === "dark") setTheme("dark");
+      } catch {
+        // Preferences remain at their safe defaults when storage is unavailable.
+      } finally {
+        setPreferencesReady(true);
+      }
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     let timer: number | undefined;
@@ -220,6 +224,7 @@ function App() {
   const previousTip = () => setTipIndex((current) => (current - 1 + tips.length) % tips.length);
 
   useEffect(() => {
+    if (!preferencesReady) return;
     document.documentElement.lang = language;
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
     document.documentElement.dataset.theme = theme;
@@ -243,7 +248,7 @@ function App() {
       });
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [language, theme, tipIndex, toast, welcomeVisible]);
+  }, [language, theme, preferencesReady, tipIndex, toast, welcomeVisible]);
 
   const toggleLanguage = () => setLanguage((current) => (current === "ar" ? "en" : "ar"));
   const toggleTheme = () => setTheme((current) => (current === "light" ? "dark" : "light"));

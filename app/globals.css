@@ -502,3 +502,10 @@ body { transition: background .35s ease, color .35s ease; }
   .availability-badge { min-height: 42px; padding-inline: 9px; }
   .availability-copy small { display: none; }
 }
+@media (max-width: 520px) {
+  .hero-inner, .hero-copy-public, .hero-actions-public, .hero-copy-public h1 { min-width: 0; max-width: 100%; }
+  .hero-copy-public h1 { font-size: clamp(34px, 10vw, 46px); overflow-wrap: anywhere; }
+  .hero-actions-public { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
+  .hero-actions-public .button-primary, .hero-actions-public .button-ghost { width: 100%; min-width: 0; }
+  .hero-copy-public > p { max-width: 100%; }
+}
