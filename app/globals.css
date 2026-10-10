@@ -861,3 +861,67 @@ body { transition: background .35s ease, color .35s ease; }
   .hero-floating-card { transform: translateZ(24px); }
   .condition-card:hover, .beauty-card:hover { transform: translateY(-3px); }
 }
+/* Refined language transition */
+@keyframes languageFlash {
+  0% { opacity: 0; transform: scaleX(.72); }
+  32% { opacity: .72; transform: scaleX(1); }
+  100% { opacity: 0; transform: scaleX(1.08); }
+}
+@keyframes languageContentSwap {
+  0% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+  42% { opacity: .48; filter: blur(1.2px); transform: translateY(5px) scale(.996); }
+  100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+}
+@keyframes languageButtonPulse {
+  0%, 100% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-2px) scale(.9) rotate(-6deg); }
+  70% { transform: translateY(0) scale(1.08) rotate(3deg); }
+}
+.welcome-screen.language-switching::before,
+.site-shell.language-switching::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(165, 234, 219, .22) 48%, rgba(244, 198, 125, .16) 52%, transparent 100%);
+  transform-origin: center;
+  pointer-events: none;
+  animation: languageFlash .56s cubic-bezier(.2, .8, .2, 1) both;
+}
+.language-switching .welcome-center,
+.language-switching .welcome-topline,
+.language-switching .welcome-bottomline,
+.language-switching .site-header,
+.language-switching .public-hero,
+.language-switching .trust-strip,
+.language-switching .content-section,
+.language-switching .tips-section,
+.language-switching .site-footer {
+  animation: languageContentSwap .56s cubic-bezier(.2, .8, .2, 1) both;
+}
+.language-toggle.is-switching,
+.welcome-language.is-switching {
+  animation: languageButtonPulse .56s cubic-bezier(.2, .8, .2, 1) both;
+  border-color: var(--mint);
+  box-shadow: 0 0 0 5px rgba(165, 234, 219, .12);
+}
+[data-theme="dark"] .welcome-screen.language-switching::before,
+[data-theme="dark"] .site-shell.language-switching::before {
+  background: linear-gradient(90deg, transparent 0%, rgba(105, 209, 190, .18) 48%, rgba(244, 198, 125, .1) 52%, transparent 100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .welcome-screen.language-switching::before,
+  .site-shell.language-switching::before,
+  .language-switching .welcome-center,
+  .language-switching .welcome-topline,
+  .language-switching .welcome-bottomline,
+  .language-switching .site-header,
+  .language-switching .public-hero,
+  .language-switching .trust-strip,
+  .language-switching .content-section,
+  .language-switching .tips-section,
+  .language-switching .site-footer,
+  .language-toggle.is-switching,
+  .welcome-language.is-switching { animation: none !important; }
+}

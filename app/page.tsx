@@ -163,6 +163,7 @@ function App() {
   const [language, setLanguage] = useState<Language>("ar");
   const [theme, setTheme] = useState<Theme>("light");
   const [preferencesReady, setPreferencesReady] = useState(false);
+  const [languageSwitching, setLanguageSwitching] = useState(false);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -251,18 +252,23 @@ function App() {
     return () => window.clearTimeout(timer);
   }, [language, theme, preferencesReady, tipIndex, toast, welcomeVisible]);
 
-  const toggleLanguage = () => setLanguage((current) => (current === "ar" ? "en" : "ar"));
+  const toggleLanguage = () => {
+    if (languageSwitching) return;
+    setLanguageSwitching(true);
+    setLanguage((current) => (current === "ar" ? "en" : "ar"));
+    window.setTimeout(() => setLanguageSwitching(false), 560);
+  };
   const toggleTheme = () => setTheme((current) => (current === "light" ? "dark" : "light"));
   const DirectionArrow = language === "ar" ? ArrowLeft : ArrowRight;
 
   if (welcomeVisible) {
     return (
-      <main className="welcome-screen" dir={language === "ar" ? "rtl" : "ltr"} data-theme={theme}>
+      <main className={languageSwitching ? "welcome-screen language-switching" : "welcome-screen"} dir={language === "ar" ? "rtl" : "ltr"} data-theme={theme}>
         <div className="welcome-backdrop" />
         <div className="welcome-glow glow-one" />
         <div className="welcome-glow glow-two" />
         <div className="welcome-content">
-          <div className="welcome-topline"><span>صحة أفضل تبدأ بخطوة واعية</span><AvailabilityBadge language={language} /><span className="welcome-preferences"><button className="welcome-control" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"}>{theme === "light" ? <Moon size={15} /> : <Sun size={15} />}</button><button className="welcome-control welcome-language" type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"}><Languages size={14} /><span>{language === "ar" ? "EN" : "عربي"}</span></button></span></div>
+          <div className="welcome-topline"><span>صحة أفضل تبدأ بخطوة واعية</span><AvailabilityBadge language={language} /><span className="welcome-preferences"><button className="welcome-control" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"}>{theme === "light" ? <Moon size={15} /> : <Sun size={15} />}</button><button className={languageSwitching ? "welcome-control welcome-language is-switching" : "welcome-control welcome-language"} type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"}><Languages size={14} /><span>{language === "ar" ? "EN" : "عربي"}</span></button></span></div>
           <div className="welcome-center">
             <div className="welcome-logo-wrap"><PharmacyMark light /></div>
             <span className="welcome-kicker">أهلًا بك في</span>
@@ -278,7 +284,7 @@ function App() {
   }
 
   return (
-    <main className="site-shell" dir={language === "ar" ? "rtl" : "ltr"} data-theme={theme}>
+    <main className={languageSwitching ? "site-shell language-switching" : "site-shell"} dir={language === "ar" ? "rtl" : "ltr"} data-theme={theme}>
       <div className="site-background" aria-hidden="true" />
       <header className="site-header">
         <div className="header-inner">
@@ -296,7 +302,7 @@ function App() {
             <AvailabilityBadge language={language} />
             <div className="header-utility-row">
               <button className="header-theme-toggle" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"} title={theme === "light" ? "Dark mode" : "Light mode"}>{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}</button>
-              <button className="language-toggle" type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"} title={language === "ar" ? "English" : "العربية"}><Languages size={16} /><span>{language === "ar" ? "EN" : "عربي"}</span></button>
+              <button className={languageSwitching ? "language-toggle is-switching" : "language-toggle"} type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"} title={language === "ar" ? "English" : "العربية"}><Languages size={16} /><span>{language === "ar" ? "EN" : "عربي"}</span></button>
               <button className="header-search" type="button" aria-label={language === "ar" ? "البحث" : "Search"} onClick={() => showToast("سيتم تفعيل البحث قريبًا")}><Search size={19} /></button>
             </div>
             <button className="header-login" type="button" onClick={() => showToast("تسجيل الدخول سيكون متاحًا قريبًا")}><UserRound size={17} /><span>تسجيل الدخول</span></button>
