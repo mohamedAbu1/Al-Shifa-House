@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState, type ComponentType } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   ArrowLeft,
@@ -11,8 +11,6 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleCheck,
-  Droplets,
-  HeartPulse,
   Home,
   Leaf,
   Languages,
@@ -26,14 +24,9 @@ import {
   Search,
   ShieldCheck,
   Sparkles,
-  Stethoscope,
-  Syringe,
-  Truck,
   UserRound,
   X,
 } from "lucide-react";
-
-type IconType = ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
 
 type Tip = {
   tag: string;
@@ -42,7 +35,7 @@ type Tip = {
   source: string;
   sourceUrl: string;
   tone: string;
-  Icon: IconType;
+  image: string;
 };
 
 const conditions = [
@@ -69,7 +62,7 @@ const tips: Tip[] = [
     source: "منظمة الصحة العالمية",
     sourceUrl: "https://www.who.int/news-room/fact-sheets/detail/hypertension",
     tone: "blue",
-    Icon: HeartPulse,
+    image: "health-heart-3d.png",
   },
   {
     tag: "الاستخدام الآمن",
@@ -78,7 +71,7 @@ const tips: Tip[] = [
     source: "مراكز مكافحة الأمراض CDC",
     sourceUrl: "https://www.cdc.gov/common-cold/treatment/index.html",
     tone: "orange",
-    Icon: Syringe,
+    image: "tip-antibiotic-3d.png",
   },
   {
     tag: "السكري",
@@ -87,7 +80,7 @@ const tips: Tip[] = [
     source: "منظمة الصحة العالمية",
     sourceUrl: "https://www.who.int/news-room/fact-sheets/detail/diabetes",
     tone: "mint",
-    Icon: Activity,
+    image: "health-diabetes-3d.png",
   },
   {
     tag: "الأعشاب والمكملات",
@@ -96,7 +89,7 @@ const tips: Tip[] = [
     source: "هيئة الغذاء والدواء FDA",
     sourceUrl: "https://www.fda.gov/consumers/consumer-updates/mixing-medications-and-dietary-supplements-can-endanger-your-health",
     tone: "purple",
-    Icon: Leaf,
+    image: "tip-herbs-3d.png",
   },
 ];
 
@@ -352,10 +345,10 @@ function App() {
       </section>
 
       <section className="trust-strip" aria-label={language === "ar" ? "مزايا الشفاء" : "Al-Shifa benefits"}>
-        <div><span className="trust-icon"><Stethoscope size={21} /></span><span><strong>إرشاد صيدلي</strong><small>معلومة مفهومة قبل الاختيار</small></span></div>
-        <div><span className="trust-icon"><Truck size={21} /></span><span><strong>خدمة قريبة</strong><small>تجربة سهلة من مكان واحد</small></span></div>
-        <div><span className="trust-icon"><Leaf size={21} /></span><span><strong>طبيعي بوعي</strong><small>لا نخلط الطبيعي بالآمن تلقائيًا</small></span></div>
-        <div><span className="trust-icon"><ShieldCheck size={21} /></span><span><strong>وضوح وخصوصية</strong><small>معلوماتك وقرارك في أمان</small></span></div>
+        <div><span className="trust-icon"><GeneratedIcon src="trust-guidance-3d.png" /></span><span><strong>إرشاد صيدلي</strong><small>معلومة مفهومة قبل الاختيار</small></span></div>
+        <div><span className="trust-icon"><GeneratedIcon src="delivery-3d.png" /></span><span><strong>خدمة قريبة</strong><small>تجربة سهلة من مكان واحد</small></span></div>
+        <div><span className="trust-icon"><GeneratedIcon src="trust-natural-3d.png" /></span><span><strong>طبيعي بوعي</strong><small>لا نخلط الطبيعي بالآمن تلقائيًا</small></span></div>
+        <div><span className="trust-icon"><GeneratedIcon src="trust-privacy-3d.png" /></span><span><strong>وضوح وخصوصية</strong><small>معلوماتك وقرارك في أمان</small></span></div>
       </section>
 
       <section id="conditions" className="content-section conditions-section">
@@ -376,7 +369,7 @@ function App() {
       <section id="beauty" className="content-section beauty-section">
         <div className="beauty-image-panel">
           <Image src="/generated/health-basics-card.png" alt="منتجات عناية صحية طبيعية" width={480} height={260} />
-          <div className="beauty-image-caption"><span><Sparkles size={15} /></span><strong>جمال يبدأ من عناية واعية</strong></div>
+          <div className="beauty-image-caption"><span><GeneratedIcon src="beauty-care-3d.png" className="beauty-caption-icon" /></span><strong>جمال يبدأ من عناية واعية</strong></div>
         </div>
         <div className="beauty-content">
           <SectionHeading eyebrow="العناية والجمال" title="اختياراتك الطبيعية، بأسلوب أهدأ" body="منتجات للعناية بالبشرة والشعر والزيوت الطبيعية والإكسسوارات الصحية، مع وصف واضح يساعدك على الاختيار." />
@@ -400,7 +393,7 @@ function App() {
             <div className="tip-controls"><button type="button" aria-label={language === "ar" ? "الإرشاد السابق" : "Previous guidance"} onClick={previousTip}>{language === "ar" ? <ChevronRight size={19} /> : <ChevronLeft size={19} />}</button><span>{String(tipIndex + 1).padStart(2, "0")} / {String(tips.length).padStart(2, "0")}</span><button type="button" aria-label={language === "ar" ? "الإرشاد التالي" : "Next guidance"} onClick={nextTip}>{language === "ar" ? <ChevronLeft size={19} /> : <ChevronRight size={19} />}</button></div>
           </div>
           <article className={"tip-card tip-" + currentTip.tone} aria-live="polite">
-            <div className="tip-visual"><div className="tip-orbit orbit-one" /><div className="tip-orbit orbit-two" /><span>{(() => { const TipIcon = currentTip.Icon; return <TipIcon size={42} strokeWidth={1.5} />; })()}</span></div>
+            <div className="tip-visual"><div className="tip-orbit orbit-one" /><div className="tip-orbit orbit-two" /><span><GeneratedIcon src={currentTip.image} className="tip-3d-icon" /></span></div>
             <div className="tip-copy"><span className="tip-tag">{currentTip.tag}</span><h3>{currentTip.title}</h3><p>{currentTip.body}</p><a href={currentTip.sourceUrl} target="_blank" rel="noreferrer">المصدر: {currentTip.source} <DirectionArrow size={15} /></a></div>
           </article>
           <div className="tip-dots" aria-label={language === "ar" ? "التنقل بين الإرشادات" : "Guidance navigation"}>{tips.map((tip, index) => <button key={tip.tag} type="button" className={index === tipIndex ? "active" : ""} aria-label={language === "ar" ? "عرض إرشاد " + (index + 1) : "Show guidance " + (index + 1)} aria-current={index === tipIndex} onClick={() => setTipIndex(index)} />)}</div>
@@ -409,13 +402,13 @@ function App() {
 
       <section id="natural" className="natural-section content-section">
         <div className="natural-copy">
-          <span className="natural-badge"><Leaf size={16} /> توازن من الطبيعة</span>
+          <span className="natural-badge"><GeneratedIcon src="trust-natural-3d.png" className="natural-badge-icon" /> توازن من الطبيعة</span>
           <h2>العلاج البديل<br /><strong>بعلم ومسؤولية</strong></h2>
           <p>نعرّفك على الأعشاب والمكملات كجزء من حوار صحي متكامل، لا كبديل عن وصفة الطبيب أو المتابعة اللازمة.</p>
           <div className="natural-points"><span><CircleCheck size={17} /> مراجعة التداخلات الدوائية</span><span><CircleCheck size={17} /> اختيار مصادر موثوقة</span><span><CircleCheck size={17} /> سؤال الصيدلي قبل الاستخدام</span></div>
           <button className="button-primary dark-button" type="button" onClick={() => showToast("سيتم فتح دليل العلاج البديل قريبًا")}>استكشف الدليل <DirectionArrow size={18} /></button>
         </div>
-        <div className="natural-art"><div className="leaf-orb orb-main"><Leaf size={72} /></div><div className="leaf-orb orb-small"><Droplets size={30} /></div><span className="natural-pill pill-one">اعرف التداخلات</span><span className="natural-pill pill-two">لا توقف دواءك بنفسك</span></div>
+        <div className="natural-art"><div className="leaf-orb orb-main"><GeneratedIcon src="natural-care-3d.png" className="natural-art-icon" /></div><div className="leaf-orb orb-small"><GeneratedIcon src="tip-herbs-3d.png" className="natural-drop-icon" /></div><span className="natural-pill pill-one">اعرف التداخلات</span><span className="natural-pill pill-two">لا توقف دواءك بنفسك</span></div>
       </section>
 
       <section className="consultation-banner content-section">
