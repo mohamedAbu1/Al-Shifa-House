@@ -4,8 +4,6 @@ import Image from "next/image";
 import { useEffect, useMemo, useState, type ComponentType } from "react";
 import {
   Activity,
-  Apple,
-  Baby,
   ArrowLeft,
   ArrowRight,
   BadgeCheck,
@@ -13,9 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleCheck,
-  Clock,
   Droplets,
-  Flower2,
   HeartPulse,
   Home,
   Leaf,
@@ -29,12 +25,8 @@ import {
   PhoneCall,
   Search,
   ShieldCheck,
-  ShoppingBag,
   Sparkles,
   Stethoscope,
-  TestTubeDiagonal,
-  ThermometerSnowflake,
-  ThermometerSun,
   Syringe,
   Truck,
   UserRound,
@@ -54,19 +46,19 @@ type Tip = {
 };
 
 const conditions = [
-  { title: "الضغط والقلب", body: "متابعة واعية لضغط الدم وصحة القلب.", Icon: HeartPulse, tone: "rose" },
-  { title: "السكري", body: "منتجات ومعلومات تساعدك على روتين متوازن.", Icon: TestTubeDiagonal, tone: "blue" },
-  { title: "البرد والحساسية", body: "راحة موسمية وإرشادات للاستخدام الآمن.", Icon: ThermometerSnowflake, tone: "orange" },
-  { title: "الجهاز الهضمي", body: "حلول يومية لطيفة للهضم والراحة.", Icon: Apple, tone: "mint" },
-  { title: "الألم والحرارة", body: "اختيارات واضحة مع سؤال الصيدلي أولًا.", Icon: ThermometerSun, tone: "purple" },
-  { title: "العناية بالأطفال", body: "عناية موثوقة تناسب احتياجات العائلة.", Icon: Baby, tone: "sky" },
+  { title: "الضغط والقلب", body: "متابعة واعية لضغط الدم وصحة القلب.", image: "health-heart-3d.png", tone: "rose" },
+  { title: "السكري", body: "منتجات ومعلومات تساعدك على روتين متوازن.", image: "health-diabetes-3d.png", tone: "blue" },
+  { title: "البرد والحساسية", body: "راحة موسمية وإرشادات للاستخدام الآمن.", image: "health-cold-3d.png", tone: "orange" },
+  { title: "الجهاز الهضمي", body: "حلول يومية لطيفة للهضم والراحة.", image: "health-digestive-3d.png", tone: "mint" },
+  { title: "الألم والحرارة", body: "اختيارات واضحة مع سؤال الصيدلي أولًا.", image: "health-fever-3d.png", tone: "purple" },
+  { title: "العناية بالأطفال", body: "عناية موثوقة تناسب احتياجات العائلة.", image: "health-child-3d.png", tone: "sky" },
 ];
 
 const beautyItems = [
-  { title: "عناية البشرة", body: "روتين يومي بسيط لبشرة أكثر نضارة.", Icon: Sparkles, tone: "peach", label: "روتينك اليومي" },
-  { title: "العناية بالشعر", body: "منتجات مختارة للعناية بفروة الرأس والشعر.", Icon: Flower2, tone: "lavender", label: "اختيارات لطيفة" },
-  { title: "الزيوت الطبيعية", body: "زيوت نقية للاستخدام الخارجي والعناية الشخصية.", Icon: Droplets, tone: "green", label: "طبيعي بعناية" },
-  { title: "إكسسوارات صحية", body: "تفاصيل صغيرة تجعل يومك الصحي أسهل.", Icon: ShoppingBag, tone: "blue", label: "أسلوب صحي" },
+  { title: "عناية البشرة", body: "روتين يومي بسيط لبشرة أكثر نضارة.", image: "beauty-skin-3d.png", tone: "peach", label: "روتينك اليومي" },
+  { title: "العناية بالشعر", body: "منتجات مختارة للعناية بفروة الرأس والشعر.", image: "beauty-hair-3d.png", tone: "lavender", label: "اختيارات لطيفة" },
+  { title: "الزيوت الطبيعية", body: "زيوت نقية للاستخدام الخارجي والعناية الشخصية.", image: "beauty-oils-3d.png", tone: "green", label: "طبيعي بعناية" },
+  { title: "إكسسوارات صحية", body: "تفاصيل صغيرة تجعل يومك الصحي أسهل.", image: "beauty-wellness-3d.png", tone: "blue", label: "أسلوب صحي" },
 ];
 
 const tips: Tip[] = [
@@ -143,7 +135,7 @@ function AvailabilityBadge({ compact = false, language }: { compact?: boolean; l
   return (
     <span className={compact ? "availability-badge compact" : "availability-badge"} aria-label={language === "ar" ? "مفتوحة 24/7" : "Open 24/7"}>
       <span className="availability-dot" aria-hidden="true" />
-      <span className="availability-icon"><Clock size={compact ? 15 : 17} /></span>
+      <GeneratedIcon src="availability-3d.png" className="availability-icon-image" />
       <span className="availability-copy"><strong>{language === "ar" ? "مفتوحة 24/7" : "Open 24/7"}</strong><small>{language === "ar" ? "خدمة على مدار الساعة" : "Round-the-clock service"}</small></span>
     </span>
   );
@@ -151,8 +143,15 @@ function AvailabilityBadge({ compact = false, language }: { compact?: boolean; l
 function DeliveryBadge({ compact = false, language }: { compact?: boolean; language: Language }) {
   return (
     <span className={compact ? "delivery-badge compact" : "delivery-badge"} aria-label={language === "ar" ? "توصيل إلى باب البيت" : "Doorstep delivery"}>
-      <span className="delivery-icon"><Truck size={compact ? 16 : 20} /></span>
+      <GeneratedIcon src="delivery-3d.png" className="delivery-icon-image" />
       <span className="delivery-copy"><strong>{language === "ar" ? "توصيل إلى باب البيت" : "Doorstep delivery"}</strong><small>{language === "ar" ? "بأقرب وقت" : "As soon as possible"}</small></span>
+    </span>
+  );
+}
+function GeneratedIcon({ src, className = "" }: { src: string; className?: string }) {
+  return (
+    <span className={`generated-3d-icon ${className}`} aria-hidden="true">
+      <Image src={`/generated/${src}`} alt="" width={96} height={96} unoptimized />
     </span>
   );
 }
@@ -362,9 +361,9 @@ function App() {
       <section id="conditions" className="content-section conditions-section">
         <SectionHeading eyebrow="اختيارات تبدأ من احتياجك" title="علاجات الحالات الصحية الشائعة" body="تعرّف على الأقسام التي تساعدك في روتينك اليومي، واسأل الصيدلي قبل بدء أي علاج جديد." />
         <div className="condition-grid">
-          {conditions.map(({ title, body, Icon, tone }) => (
+          {conditions.map(({ title, body, image, tone }) => (
             <button className="condition-card" type="button" key={title} onClick={() => showToast("سيتم تجهيز قسم " + title + " قريبًا")}>
-              <span className={"category-icon " + tone}><Icon size={25} /></span>
+              <span className={"category-icon " + tone}><GeneratedIcon src={image} /></span>
               <span className="card-arrow">{language === "ar" ? <ChevronLeft size={17} /> : <ChevronRight size={17} />}</span>
               <strong>{title}</strong>
               <small>{body}</small>
@@ -382,9 +381,9 @@ function App() {
         <div className="beauty-content">
           <SectionHeading eyebrow="العناية والجمال" title="اختياراتك الطبيعية، بأسلوب أهدأ" body="منتجات للعناية بالبشرة والشعر والزيوت الطبيعية والإكسسوارات الصحية، مع وصف واضح يساعدك على الاختيار." />
           <div className="beauty-grid">
-            {beautyItems.map(({ title, body, Icon, tone, label }) => (
+            {beautyItems.map(({ title, body, image, tone, label }) => (
               <button className="beauty-card" type="button" key={title} onClick={() => showToast("سيتم فتح " + title + " قريبًا")}>
-                <span className={"beauty-icon " + tone}><Icon size={21} /></span>
+                <span className={"beauty-icon " + tone}><GeneratedIcon src={image} /></span>
                 <span><strong>{title}</strong><small>{body}</small></span>
                 <em>{label}</em>
               </button>
