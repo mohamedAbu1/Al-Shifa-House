@@ -1473,3 +1473,61 @@ html {
   .auth-check input[type="checkbox"],
   .auth-consent input[type="checkbox"] { width: 24px; height: 24px; flex-basis: 24px; }
 }
+
+/* Patient account status and hosted identity surface. */
+.auth-account-status {
+  display: flex;
+  min-width: 0;
+  margin: 14px 0;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  border: 1px solid rgba(57, 141, 112, .2);
+  border-radius: 16px;
+  color: var(--teal-700);
+  background: linear-gradient(145deg, rgba(228, 250, 243, .82), rgba(255, 255, 255, .76));
+  box-shadow: 3px 5px 12px rgba(20, 71, 65, .07), inset 1px 1px 0 rgba(255, 255, 255, .92);
+}
+.auth-account-status > svg { flex: 0 0 auto; }
+.auth-account-status > div { display: grid; min-width: 0; gap: 3px; }
+.auth-account-status strong { color: var(--ink); font-size: 11px; }
+.auth-account-status small { color: var(--muted); font-size: 10px; line-height: 1.55; }
+.auth-signin-link {
+  display: inline-flex;
+  min-height: 34px;
+  margin-inline-start: auto;
+  padding: 0 12px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(11, 118, 112, .25);
+  border-radius: 10px;
+  color: var(--teal-700);
+  background: rgba(255, 255, 255, .76);
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+.auth-signin-link:hover {
+  border-color: rgba(11, 118, 112, .5);
+  background: var(--mint-soft);
+  transform: translateY(-1px);
+}
+.auth-submit:disabled { opacity: .62; cursor: wait; transform: none; }
+[data-theme="dark"] .auth-account-status {
+  border-color: rgba(165, 234, 219, .18);
+  color: var(--mint);
+  background: linear-gradient(145deg, rgba(25, 75, 72, .9), rgba(7, 35, 37, .9));
+  box-shadow: 3px 5px 12px rgba(0, 0, 0, .18), inset 1px 1px 0 rgba(165, 234, 219, .08);
+}
+[data-theme="dark"] .auth-account-status strong { color: #eafff8; }
+[data-theme="dark"] .auth-signin-link {
+  border-color: rgba(165, 234, 219, .24);
+  color: var(--mint);
+  background: rgba(12, 55, 56, .8);
+}
+[data-theme="dark"] .auth-signin-link:hover { border-color: rgba(165, 234, 219, .5); background: rgba(18, 66, 63, .92); }
+@media (max-width: 600px) {
+  .auth-account-status { align-items: flex-start; }
+  .auth-signin-link { margin-inline-start: 0; margin-inline-end: auto; }
+}

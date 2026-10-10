@@ -170,8 +170,6 @@ type PatientFormState = {
   email: string;
   phone: string;
   whatsapp: boolean;
-  password: string;
-  confirmPassword: string;
   city: string;
   emergencyPhone: string;
   height: string;
@@ -195,8 +193,6 @@ const emptyPatientForm: PatientFormState = {
   email: "",
   phone: "",
   whatsapp: false,
-  password: "",
-  confirmPassword: "",
   city: "",
   emergencyPhone: "",
   height: "",
@@ -219,6 +215,32 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
   const [form, setForm] = useState<PatientFormState>(emptyPatientForm);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const loadProfile = async () => {
+      try {
+        const response = await fetch("/api/patient-profile", { headers: { Accept: "application/json" } });
+        const data = (await response.json()) as { email?: string; profile?: Partial<PatientFormState> | null };
+        if (!active) return;
+        if (!response.ok) {
+          setAuthenticated(false);
+          return;
+        }
+        setAuthenticated(true);
+        setForm((current) => ({ ...current, email: data.email ?? current.email, ...(data.profile ?? {}) }));
+      } catch {
+        if (active) setAuthenticated(false);
+      } finally {
+        if (active) setLoadingProfile(false);
+      }
+    };
+    void loadProfile();
+    return () => { active = false; };
+  }, []);
   const copy = isArabic ? {
     back: "العودة إلى الرئيسية",
     kicker: "تسجيل آمن وملف صحي أوضح",
@@ -228,7 +250,7 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
     visualBody: "كل معلومة صحيحة تساعد فريق الشفاء على طرح السؤال المناسب قبل اقتراح أي خيار صحي.",
     visualNote: "مراجعة بشرية وإرشاد واضح",
     account: "بيانات الحساب",
-    accountHint: "استخدم بريدًا إلكترونيًا ورقمًا يمكنك الوصول إليهما.",
+    accountHint: "يتم ربط الملف بحساب تسجيل الدخول الآمن، ولا يتم تخزين كلمة مرور داخل الموقع.",
     profile: "البيانات الشخصية",
     health: "التاريخ الصحي",
     contact: "التواصل والطوارئ",
@@ -241,8 +263,6 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
     email: "البريد الإلكتروني",
     phone: "رقم الهاتف",
     whatsapp: "هذا الرقم متصل بواتساب *",
-    password: "كلمة المرور",
-    confirmPassword: "تأكيد كلمة المرور",
     city: "المدينة / المحافظة",
     emergencyPhone: "رقم للتواصل عند الطوارئ (اختياري)",
     height: "الطول بالسنتيمتر (اختياري)",
@@ -263,15 +283,21 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
     notPregnant: "لا",
     pregnant: "نعم",
     consent: "أوافق على استخدام هذه المعلومات لتقديم إرشاد صيدلي عام، وأفهم أنها لا تغني عن زيارة الطبيب.",
-    privacy: "لا يتم حفظ البيانات الحساسة في المتصفح قبل ربط النظام بخدمة آمنة.",
+    privacy: "تُحفظ البيانات في ملفك الصحي داخل قاعدة بيانات محمية ولا يقرأها إلا حسابك.",
     progressNote: "الحقول التي تحمل علامة * مطلوبة.",
     requiredError: "أكمل الحقول المطلوبة أولًا، وسنضع المؤشر على أول حقل ناقص.",
     conditionError: "اختر مرضًا مزمنًا واحدًا على الأقل أو اختر «لا». ",
     whatsappError: "يرجى تأكيد أن رقم الهاتف متصل بواتساب.",
     submit: "حفظ البيانات والمتابعة",
-    success: "تمت مراجعة الحقول بنجاح. النموذج جاهز الآن للربط بخدمة حسابات آمنة وفريق الصيدلية.",
-    passwordError: "يجب أن تتطابق كلمتا المرور وأن تتكون كلمة المرور من 8 أحرف على الأقل.",
+    success: "تم حفظ ملفك الصحي بنجاح. يمكنك العودة لتحديث بياناتك في أي وقت.",
     consentError: "يرجى الموافقة على ملاحظة الاستخدام قبل المتابعة.",
+    authStatus: "الحساب متصل وآمن",
+    authStatusAnonymous: "سجّل الدخول لحفظ ملفك الصحي",
+    signIn: "تسجيل الدخول الآمن",
+    authRequired: "يجب تسجيل الدخول أولًا حتى نربط البيانات بحساب المريض.",
+    loadingProfile: "جاري تحميل ملفك الصحي...",
+    saving: "جاري حفظ الملف...",
+    saveError: "تعذر حفظ الملف الآن. حاول مرة أخرى بعد لحظات.",
   } : {
     back: "Back to home",
     kicker: "Secure sign-up and a clearer health profile",
@@ -281,7 +307,7 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
     visualBody: "Every accurate detail helps the Al-Shifa team ask the right question before suggesting any health option.",
     visualNote: "Human review and clear guidance",
     account: "Account details",
-    accountHint: "Use an email and phone number you can access.",
+    accountHint: "Your profile is linked to secure sign-in; no password is stored in this site.",
     profile: "Personal profile",
     health: "Health history",
     contact: "Contact and emergency",
@@ -294,8 +320,6 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
     email: "Email address",
     phone: "Phone number",
     whatsapp: "This number is connected to WhatsApp *",
-    password: "Password",
-    confirmPassword: "Confirm password",
     city: "City / governorate",
     emergencyPhone: "Emergency contact number (optional)",
     height: "Height in cm (optional)",
@@ -316,15 +340,21 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
     notPregnant: "No",
     pregnant: "Yes",
     consent: "I agree to use this information for general pharmacy guidance and understand it does not replace a doctor visit.",
-    privacy: "Sensitive data is not stored in the browser before a secure service is connected.",
+    privacy: "Your profile is stored in a protected database and is only available to your account.",
     progressNote: "Fields marked with * are required.",
     requiredError: "Complete the required fields first. We will focus the first missing field.",
     conditionError: "Select at least one chronic condition, or choose No.",
     whatsappError: "Please confirm that this phone number is connected to WhatsApp.",
     submit: "Save details and continue",
-    success: "The fields were validated successfully. The form is ready to connect to a secure account service and pharmacy team.",
-    passwordError: "Passwords must match and contain at least 8 characters.",
+    success: "Your health profile was saved successfully. You can return and update it anytime.",
     consentError: "Please accept the information-use notice before continuing.",
+    authStatus: "Account connected securely",
+    authStatusAnonymous: "Sign in to save your health profile",
+    signIn: "Secure sign in",
+    authRequired: "Please sign in first so we can link this data to the patient account.",
+    loadingProfile: "Loading your health profile...",
+    saving: "Saving profile...",
+    saveError: "The profile could not be saved right now. Please try again.",
   };
   const chronicOptions = isArabic ? [
     ["diabetes", "السكري"], ["hypertension", "الضغط المرتفع"], ["heart", "أمراض القلب"], ["asthma", "الربو"], ["kidney", "أمراض الكلى"], ["liver", "أمراض الكبد"], ["other", "أخرى"],
@@ -368,22 +398,25 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
     setError("");
     setSubmitted(false);
   };
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (loadingProfile) return;
+    if (!authenticated) {
+      setError(copy.authRequired);
+      return;
+    }
     const requiredFields: Array<[boolean, string]> = [
-      [!form.email, "auth-email"], [!form.password, "auth-password"], [!form.confirmPassword, "auth-confirm-password"],
-      [!form.fullName, "auth-full-name"], [!form.age, "auth-age"], [!form.gender, "auth-gender"], [!form.phone, "auth-phone"],
+      [!form.email, "auth-email"],
+      [!form.fullName, "auth-full-name"],
+      [!form.age, "auth-age"],
+      [!form.gender, "auth-gender"],
+      [!form.phone, "auth-phone"],
       [!form.symptoms && !form.symptomDetails, "auth-symptoms"],
     ];
     const firstMissing = requiredFields.find(([missing]) => missing);
     if (firstMissing) {
       setError(copy.requiredError);
       requestAnimationFrame(() => document.getElementById(firstMissing[1])?.focus());
-      return;
-    }
-    if (form.password.length < 8 || form.password !== form.confirmPassword) {
-      setError(copy.passwordError);
-      requestAnimationFrame(() => document.getElementById("auth-password")?.focus());
       return;
     }
     if (form.chronicDisease === "yes" && form.chronicConditions.length === 0) {
@@ -400,8 +433,30 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
       requestAnimationFrame(() => document.getElementById("auth-consent")?.focus());
       return;
     }
+
     setError("");
-    setSubmitted(true);
+    setSaving(true);
+    try {
+      const response = await fetch("/api/patient-profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (response.status === 401) {
+        setAuthenticated(false);
+        setError(copy.authRequired);
+        return;
+      }
+      if (!response.ok) {
+        setError(copy.saveError);
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError(copy.saveError);
+    } finally {
+      setSaving(false);
+    }
   };
   return (
     <main className={languageSwitching ? "auth-screen language-switching" : "auth-screen"} dir={isArabic ? "rtl" : "ltr"} data-theme={theme}>
@@ -424,7 +479,18 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
             {submitted ? <div className="auth-success" role="status"><CircleCheck size={19} /><span>{copy.success}</span></div> : null}
             {error ? <div className="auth-error" role="alert"><ShieldCheck size={18} /><span>{error}</span></div> : null}
             <form className="patient-form" onSubmit={handleSubmit} noValidate>
-              <fieldset className="auth-form-section"><legend><span className="auth-section-icon"><LockKeyhole size={17} /></span>{copy.account}</legend><p className="auth-section-hint">{copy.accountHint}</p><div className="auth-form-grid"><label className="auth-field"><span>{copy.email} *</span><span className="auth-input-wrap"><Mail size={17} /><input id="auth-email" type="email" autoComplete="email" required value={form.email} onChange={(event) => setField("email", event.target.value)} placeholder="name@example.com" /></span></label><label className="auth-field"><span>{copy.password} *</span><span className="auth-input-wrap"><LockKeyhole size={17} /><input id="auth-password" type="password" autoComplete="new-password" required minLength={8} value={form.password} onChange={(event) => setField("password", event.target.value)} /></span></label><label className="auth-field"><span>{copy.confirmPassword} *</span><span className="auth-input-wrap"><LockKeyhole size={17} /><input id="auth-confirm-password" type="password" autoComplete="new-password" required minLength={8} value={form.confirmPassword} onChange={(event) => setField("confirmPassword", event.target.value)} /></span></label></div></fieldset>
+              <fieldset className="auth-form-section">
+  <legend><span className="auth-section-icon"><LockKeyhole size={17} /></span>{copy.account}</legend>
+  <p className="auth-section-hint">{copy.accountHint}</p>
+  <div className="auth-account-status">
+    <ShieldCheck size={18} />
+    <div><strong>{loadingProfile ? copy.loadingProfile : authenticated ? copy.authStatus : copy.authStatusAnonymous}</strong><small>{copy.privacy}</small></div>
+    {!loadingProfile && !authenticated ? <a className="auth-signin-link" href="/signin-with-chatgpt?return_to=%2F%3FopenProfile%3D1" target="_top">{copy.signIn}</a> : null}
+  </div>
+  <div className="auth-form-grid">
+    <label className="auth-field auth-field-wide"><span>{copy.email} *</span><span className="auth-input-wrap"><Mail size={17} /><input id="auth-email" type="email" autoComplete="email" required readOnly={authenticated} value={form.email} onChange={(event) => setField("email", event.target.value)} placeholder="name@example.com" /></span></label>
+  </div>
+</fieldset>
               <fieldset className="auth-form-section"><legend><span className="auth-section-icon"><UserRound size={17} /></span>{copy.profile}</legend><div className="auth-form-grid"><label className="auth-field auth-field-wide"><span>{copy.fullName} *</span><span className="auth-input-wrap"><UserRound size={17} /><input id="auth-full-name" autoComplete="name" required value={form.fullName} onChange={(event) => setField("fullName", event.target.value)} /></span></label><label className="auth-field"><span>{copy.age} *</span><span className="auth-input-wrap"><CalendarDays size={17} /><input id="auth-age" type="number" inputMode="numeric" required min="0" max="120" value={form.age} onChange={(event) => setField("age", event.target.value)} /></span></label><label className="auth-field"><span>{copy.gender} *</span><span className="auth-input-wrap auth-select-wrap"><UserRound size={17} /><select className="auth-select" id="auth-gender" required value={form.gender} onChange={(event) => setField("gender", event.target.value)}><option value="">{isArabic ? "اختر" : "Select"}</option><option value="male">{copy.male}</option><option value="female">{copy.female}</option><option value="private">{copy.preferNot}</option></select><ChevronDown className="auth-select-chevron" size={16} aria-hidden="true" /></span></label><label className="auth-field"><span>{copy.height}</span><span className="auth-input-wrap"><Activity size={17} /><input type="number" min="0" value={form.height} onChange={(event) => setField("height", event.target.value)} /></span></label><label className="auth-field"><span>{copy.weight}</span><span className="auth-input-wrap"><Activity size={17} /><input type="number" min="0" value={form.weight} onChange={(event) => setField("weight", event.target.value)} /></span></label></div></fieldset>
               <fieldset className="auth-form-section"><legend><span className="auth-section-icon"><PhoneCall size={17} /></span>{copy.contact}</legend><div className="auth-form-grid"><label className="auth-field"><span>{copy.phone} *</span><span className="auth-input-wrap"><PhoneCall size={17} /><input id="auth-phone" type="tel" autoComplete="tel" inputMode="tel" required value={form.phone} onChange={(event) => setField("phone", event.target.value)} placeholder="01XXXXXXXXX" /></span></label><label className="auth-field"><span>{copy.city}</span><span className="auth-input-wrap auth-select-wrap"><MapPin size={17} /><select className="auth-select" id="auth-city" value={form.city} onChange={(event) => setField("city", event.target.value)}><option value="">{isArabic ? "اختر المحافظة" : "Select governorate"}</option>{cityOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><ChevronDown className="auth-select-chevron" size={16} aria-hidden="true" /></span></label><label className="auth-field auth-field-wide"><span>{copy.emergencyPhone}</span><span className="auth-input-wrap"><PhoneCall size={17} /><input type="tel" value={form.emergencyPhone} onChange={(event) => setField("emergencyPhone", event.target.value)} /></span></label><label className="auth-check auth-field-wide"><input id="auth-whatsapp" type="checkbox" checked={form.whatsapp} onChange={(event) => setField("whatsapp", event.target.checked)} /><span>{copy.whatsapp}</span></label></div></fieldset>
               <fieldset className="auth-form-section">
@@ -438,7 +504,7 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
                 </div>
                 <div className="auth-details-grid"><label className="auth-field auth-field-wide"><span>{copy.symptomDetails}</span><textarea id="auth-symptoms" rows={3} value={form.symptomDetails} onChange={(event) => setField("symptomDetails", event.target.value)} /></label><label className="auth-field"><span>{copy.allergyDetails}</span><textarea rows={3} value={form.allergyDetails} onChange={(event) => setField("allergyDetails", event.target.value)} /></label><label className="auth-field"><span>{copy.medicationDetails}</span><textarea rows={3} value={form.medicationDetails} onChange={(event) => setField("medicationDetails", event.target.value)} /></label><label className="auth-field auth-field-wide"><span>{copy.pregnancy}</span><span className="auth-input-wrap auth-select-wrap"><HeartPulse size={17} /><select className="auth-select" value={form.pregnancyStatus} onChange={(event) => setField("pregnancyStatus", event.target.value)}><option value="">{copy.notApplicable}</option><option value="no">{copy.notPregnant}</option><option value="yes">{copy.pregnant}</option></select><ChevronDown className="auth-select-chevron" size={16} aria-hidden="true" /></span></label></div>
               </fieldset>
-              <label className="auth-consent"><input id="auth-consent" type="checkbox" required checked={form.consent} onChange={(event) => setField("consent", event.target.checked)} /><span>{copy.consent}</span></label><button className="auth-submit button-primary" type="submit">{copy.submit} <AuthDirectionArrow size={18} /></button>
+              <label className="auth-consent"><input id="auth-consent" type="checkbox" required checked={form.consent} onChange={(event) => setField("consent", event.target.checked)} /><span>{copy.consent}</span></label><button className="auth-submit button-primary" type="submit" disabled={saving || loadingProfile} aria-busy={saving}>{saving ? copy.saving : copy.submit} <AuthDirectionArrow size={18} /></button>
             </form>
           </section>
         </div>
@@ -485,6 +551,16 @@ function App() {
     return () => {
       if (timer !== undefined) window.clearTimeout(timer);
     };
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("openProfile") !== "1") return;
+    const timer = window.setTimeout(() => {
+      setWelcomeVisible(false);
+      setAuthVisible(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
