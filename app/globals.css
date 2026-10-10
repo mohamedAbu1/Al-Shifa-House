@@ -509,3 +509,154 @@ body { transition: background .35s ease, color .35s ease; }
   .hero-actions-public .button-primary, .hero-actions-public .button-ghost { width: 100%; min-width: 0; }
   .hero-copy-public > p { max-width: 100%; }
 }
+
+/* Desktop side rail navigation inspired by the pharmacy dashboard reference */
+@media (min-width: 761px) {
+  .site-shell { padding-left: 244px; }
+  .site-header {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 50;
+    width: 244px;
+    height: 100dvh;
+    border: 0;
+    background: linear-gradient(180deg, #063c3d 0%, #075959 100%);
+    box-shadow: 14px 0 38px rgba(6, 60, 61, .16);
+  }
+  .site-header .header-inner {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 26px 16px 18px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
+  }
+  .site-header .header-brand-button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 36px;
+    padding: 0 7px;
+  }
+  .site-header .pharmacy-brand { width: 100%; color: #fff; text-align: left; }
+  .site-header .pharmacy-brand-copy strong { color: #fff; }
+  .site-header .pharmacy-brand-copy small { color: rgba(236, 255, 250, .63); }
+  .site-header .pharmacy-mark { border-color: rgba(165, 234, 219, .45); background: rgba(165, 234, 219, .13); }
+  .site-header .main-nav {
+    display: grid;
+    align-items: stretch;
+    gap: 6px;
+    width: 100%;
+    direction: ltr;
+  }
+  .site-header .main-nav button:not(.mobile-nav-close) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 48px;
+    padding: 0 13px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+    color: rgba(239, 255, 251, .72);
+    text-align: left;
+    direction: ltr;
+  }
+  .site-header .main-nav .nav-label {
+    flex: 1;
+    direction: rtl;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 800;
+  }
+  [dir="ltr"] .site-header .main-nav .nav-label { direction: ltr; text-align: left; }
+  .site-header .main-nav button svg { color: #a5eadb; flex: 0 0 auto; }
+  .site-header .main-nav button:hover {
+    border-color: rgba(165, 234, 219, .16);
+    color: #fff;
+    background: rgba(165, 234, 219, .12);
+  }
+  .site-header .mobile-nav-close { display: none; }
+  .site-header .header-actions {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    margin-top: auto;
+  }
+  .site-header .header-utility-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .site-header .header-theme-toggle,
+  .site-header .language-toggle,
+  .site-header .header-search {
+    width: 100%;
+    min-width: 0;
+    height: 39px;
+    padding: 0;
+    border-color: rgba(165, 234, 219, .2);
+    color: #d8f7ef;
+    background: rgba(165, 234, 219, .1);
+  }
+  .site-header .header-login {
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    border-color: rgba(165, 234, 219, .28);
+    color: #fff;
+    background: linear-gradient(105deg, #0e8e83, #4bc7b2);
+  }
+  .site-header .availability-badge {
+    width: 100%;
+    justify-content: flex-start;
+    border-color: rgba(165, 234, 219, .35);
+    color: #effffb;
+    background: rgba(7, 55, 56, .42);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .12);
+  }
+  .site-header .availability-copy { text-align: left; }
+  .site-header .availability-copy strong { color: #effffb; }
+  .site-header .availability-copy small { color: rgba(236, 255, 250, .68); }
+  .site-header .availability-icon { color: var(--mint); background: rgba(165, 234, 219, .13); }
+}
+
+/* Restore the compact top bar and drawer navigation on smaller screens */
+@media (max-width: 760px) {
+  .site-shell { padding-left: 0; }
+  .site-header {
+    position: sticky;
+    inset: auto;
+    width: auto;
+    height: auto;
+    border-bottom: 1px solid rgba(18, 72, 73, .08);
+    background: rgba(255, 255, 255, .85);
+    box-shadow: none;
+  }
+  .site-header .header-inner {
+    width: calc(100% - 32px);
+    height: auto;
+    min-height: 68px;
+    padding: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  .site-header .header-brand-button {
+    display: block;
+    width: auto;
+    margin-bottom: 0;
+    padding: 0;
+  }
+  .site-header .header-utility-row { display: contents; }
+}
+@media (min-width: 761px) {
+  .site-header .header-brand-button,
+  .site-header .main-nav,
+  .site-header .header-actions { order: 0; }
+  .site-header .header-actions { margin-inline-start: 0; }
+}

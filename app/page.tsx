@@ -15,6 +15,7 @@ import {
   Droplets,
   Flower2,
   HeartPulse,
+  Home,
   Leaf,
   Languages,
   Mail,
@@ -109,7 +110,7 @@ type Theme = "light" | "dark";
 
 const translationPairs: Array<[string, string]> = [
   ["صيدلية الشفاء", "Al-Shifa Pharmacy"], ["رعاية أقرب إليك", "Care, closer to you"], ["صحة أفضل تبدأ بخطوة واعية", "A healthier life starts with a mindful step"], ["مفتوح لخدمتك", "Open to serve you"], ["مفتوحة 24/7", "Open 24/7"], ["خدمة على مدار الساعة", "Round-the-clock service"], ["أهلًا بك في", "Welcome to"], ["رعاية موثوقة، إرشاد واضح، واختيارات صحية أقرب إلى حياتك اليومية.", "Trusted care, clear guidance, and healthier choices for everyday life."], ["اكتشف خدمات الشفاء", "Discover Al-Shifa services"], ["معلومات عامة موثوقة مع احترام خصوصيتك", "Reliable general information with respect for your privacy"], ["نعتني بالتفاصيل الصغيرة التي تصنع فرقًا", "We care about the small details that make a difference"], ["دارك الصحي يبدأ من هنا", "Your health journey starts here"],
-  ["الحالات الصحية", "Health conditions"], ["العناية والجمال", "Beauty & care"], ["إرشادات طبية", "Medical guidance"], ["الإرشادات الطبية", "Medical guidance"], ["العلاج البديل", "Alternative care"], ["فتح القائمة", "Open menu"], ["إغلاق القائمة", "Close menu"], ["البحث", "Search"], ["تسجيل الدخول", "Sign in"], ["العودة إلى الصفحة الرئيسية", "Back to home"], ["سيتم تفعيل البحث قريبًا", "Search will be available soon"], ["تسجيل الدخول سيكون متاحًا قريبًا", "Sign in will be available soon"],
+  ["الرئيسية", "Home"], ["الحالات الصحية", "Health conditions"], ["العناية والجمال", "Beauty & care"], ["إرشادات طبية", "Medical guidance"], ["الإرشادات الطبية", "Medical guidance"], ["العلاج البديل", "Alternative care"], ["فتح القائمة", "Open menu"], ["إغلاق القائمة", "Close menu"], ["البحث", "Search"], ["تسجيل الدخول", "Sign in"], ["العودة إلى الصفحة الرئيسية", "Back to home"], ["سيتم تفعيل البحث قريبًا", "Search will be available soon"], ["تسجيل الدخول سيكون متاحًا قريبًا", "Sign in will be available soon"],
   ["رعاية صحية بطابع إنساني", "Human-centered healthcare"], ["صحتك أولًا،", "Your health comes first,"], ["والاختيار أسهل.", "and choosing is easier."], ["من العلاجات اليومية إلى العناية الطبيعية، نساعدك على اتخاذ قرار صحي أوضح مع إرشاد صيدلي موثوق.", "From everyday treatments to natural care, we help you make clearer health decisions with trusted pharmacy guidance."], ["تصفح الأقسام", "Explore sections"], ["اقرأ إرشاداتنا", "Read our guidance"], ["اختيارات موثوقة", "Trusted choices"], ["خصوصية ووضوح", "Privacy & clarity"], ["اسأل الصيدلي", "Ask the pharmacist"], ["رعاية موثوقة", "Trusted care"], ["كل يوم، بخطوة أوضح", "Every day, one clearer step"], ["اختيارات بعناية", "Carefully selected"], ["لروتينك الصحي", "For your health routine"],
   ["إرشاد صيدلي", "Pharmacy guidance"], ["معلومة مفهومة قبل الاختيار", "Clear information before you choose"], ["خدمة قريبة", "Care close to home"], ["تجربة سهلة من مكان واحد", "An easy experience in one place"], ["طبيعي بوعي", "Natural care, with awareness"], ["لا نخلط الطبيعي بالآمن تلقائيًا", "Natural does not always mean safe"], ["وضوح وخصوصية", "Clarity & privacy"], ["معلوماتك وقرارك في أمان", "Your information and choice stay safe"],
   ["اختيارات تبدأ من احتياجك", "Care tailored to your needs"], ["علاجات الحالات الصحية الشائعة", "Treatments for common health conditions"], ["تعرّف على الأقسام التي تساعدك في روتينك اليومي، واسأل الصيدلي قبل بدء أي علاج جديد.", "Explore sections that support your daily routine, and ask the pharmacist before starting any new treatment."], ["استكشف القسم", "Explore section"], ["سيتم تجهيز قسم ", "The "] , [" قريبًا", " section will be available soon"],
@@ -285,17 +286,20 @@ function App() {
           <button className="header-brand-button" type="button" onClick={() => goTo("home")} aria-label={language === "ar" ? "العودة إلى الصفحة الرئيسية" : "Back to home"}><PharmacyMark compact /></button>
           <nav className={mobileMenu ? "main-nav open" : "main-nav"} aria-label={language === "ar" ? "التنقل الرئيسي" : "Main navigation"}>
             <button className="mobile-nav-close" type="button" aria-label={language === "ar" ? "إغلاق القائمة" : "Close menu"} onClick={() => setMobileMenu(false)}><X size={20} /></button>
-            <button type="button" onClick={() => goTo("conditions")}>الحالات الصحية</button>
-            <button type="button" onClick={() => goTo("beauty")}>العناية والجمال</button>
-            <button type="button" onClick={() => goTo("tips")}>إرشادات طبية</button>
-            <button type="button" onClick={() => goTo("natural")}>العلاج البديل</button>
+            <button type="button" onClick={() => goTo("home")}><Home size={18} /><span className="nav-label">الرئيسية</span></button>
+            <button type="button" onClick={() => goTo("conditions")}><Activity size={18} /><span className="nav-label">الحالات الصحية</span></button>
+            <button type="button" onClick={() => goTo("beauty")}><Sparkles size={18} /><span className="nav-label">العناية والجمال</span></button>
+            <button type="button" onClick={() => goTo("tips")}><BookOpen size={18} /><span className="nav-label">إرشادات طبية</span></button>
+            <button type="button" onClick={() => goTo("natural")}><Leaf size={18} /><span className="nav-label">العلاج البديل</span></button>
           </nav>
           <div className="header-actions">
-            <AvailabilityBadge compact language={language} />
-            <button className="header-theme-toggle" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"} title={theme === "light" ? "Dark mode" : "Light mode"}>{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}</button>
-            <button className="language-toggle" type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"} title={language === "ar" ? "English" : "العربية"}><Languages size={16} /><span>{language === "ar" ? "EN" : "عربي"}</span></button>
-            <button className="header-search" type="button" aria-label={language === "ar" ? "البحث" : "Search"} onClick={() => showToast("سيتم تفعيل البحث قريبًا")}><Search size={19} /></button>
-            <button className="header-login" type="button" onClick={() => showToast("تسجيل الدخول سيكون متاحًا قريبًا")}><UserRound size={17} /> تسجيل الدخول</button>
+            <AvailabilityBadge language={language} />
+            <div className="header-utility-row">
+              <button className="header-theme-toggle" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"} title={theme === "light" ? "Dark mode" : "Light mode"}>{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}</button>
+              <button className="language-toggle" type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"} title={language === "ar" ? "English" : "العربية"}><Languages size={16} /><span>{language === "ar" ? "EN" : "عربي"}</span></button>
+              <button className="header-search" type="button" aria-label={language === "ar" ? "البحث" : "Search"} onClick={() => showToast("سيتم تفعيل البحث قريبًا")}><Search size={19} /></button>
+            </div>
+            <button className="header-login" type="button" onClick={() => showToast("تسجيل الدخول سيكون متاحًا قريبًا")}><UserRound size={17} /><span>تسجيل الدخول</span></button>
           </div>
         </div>
       </header>
