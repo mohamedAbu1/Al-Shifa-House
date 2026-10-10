@@ -1090,3 +1090,8 @@ html {
     height: 42px;
   }
 }
+/* Keep generated 3D icons floating on transparent backgrounds */
+.category-icon,
+.beauty-icon {
+  background: transparent !important;
+}
