@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleCheck,
+  Clock,
   Droplets,
   Flower2,
   HeartPulse,
@@ -106,7 +107,7 @@ type Language = "ar" | "en";
 type Theme = "light" | "dark";
 
 const translationPairs: Array<[string, string]> = [
-  ["صيدلية الشفاء", "Al-Shifa Pharmacy"], ["رعاية أقرب إليك", "Care, closer to you"], ["صحة أفضل تبدأ بخطوة واعية", "A healthier life starts with a mindful step"], ["مفتوح لخدمتك", "Open to serve you"], ["أهلًا بك في", "Welcome to"], ["رعاية موثوقة، إرشاد واضح، واختيارات صحية أقرب إلى حياتك اليومية.", "Trusted care, clear guidance, and healthier choices for everyday life."], ["اكتشف خدمات الشفاء", "Discover Al-Shifa services"], ["معلومات عامة موثوقة مع احترام خصوصيتك", "Reliable general information with respect for your privacy"], ["نعتني بالتفاصيل الصغيرة التي تصنع فرقًا", "We care about the small details that make a difference"], ["دارك الصحي يبدأ من هنا", "Your health journey starts here"],
+  ["صيدلية الشفاء", "Al-Shifa Pharmacy"], ["رعاية أقرب إليك", "Care, closer to you"], ["صحة أفضل تبدأ بخطوة واعية", "A healthier life starts with a mindful step"], ["مفتوح لخدمتك", "Open to serve you"], ["مفتوحة 24/7", "Open 24/7"], ["خدمة على مدار الساعة", "Round-the-clock service"], ["أهلًا بك في", "Welcome to"], ["رعاية موثوقة، إرشاد واضح، واختيارات صحية أقرب إلى حياتك اليومية.", "Trusted care, clear guidance, and healthier choices for everyday life."], ["اكتشف خدمات الشفاء", "Discover Al-Shifa services"], ["معلومات عامة موثوقة مع احترام خصوصيتك", "Reliable general information with respect for your privacy"], ["نعتني بالتفاصيل الصغيرة التي تصنع فرقًا", "We care about the small details that make a difference"], ["دارك الصحي يبدأ من هنا", "Your health journey starts here"],
   ["الحالات الصحية", "Health conditions"], ["العناية والجمال", "Beauty & care"], ["إرشادات طبية", "Medical guidance"], ["الإرشادات الطبية", "Medical guidance"], ["العلاج البديل", "Alternative care"], ["فتح القائمة", "Open menu"], ["إغلاق القائمة", "Close menu"], ["البحث", "Search"], ["تسجيل الدخول", "Sign in"], ["العودة إلى الصفحة الرئيسية", "Back to home"], ["سيتم تفعيل البحث قريبًا", "Search will be available soon"], ["تسجيل الدخول سيكون متاحًا قريبًا", "Sign in will be available soon"],
   ["رعاية صحية بطابع إنساني", "Human-centered healthcare"], ["صحتك أولًا،", "Your health comes first,"], ["والاختيار أسهل.", "and choosing is easier."], ["من العلاجات اليومية إلى العناية الطبيعية، نساعدك على اتخاذ قرار صحي أوضح مع إرشاد صيدلي موثوق.", "From everyday treatments to natural care, we help you make clearer health decisions with trusted pharmacy guidance."], ["تصفح الأقسام", "Explore sections"], ["اقرأ إرشاداتنا", "Read our guidance"], ["اختيارات موثوقة", "Trusted choices"], ["خصوصية ووضوح", "Privacy & clarity"], ["اسأل الصيدلي", "Ask the pharmacist"], ["رعاية موثوقة", "Trusted care"], ["كل يوم، بخطوة أوضح", "Every day, one clearer step"], ["اختيارات بعناية", "Carefully selected"], ["لروتينك الصحي", "For your health routine"],
   ["إرشاد صيدلي", "Pharmacy guidance"], ["معلومة مفهومة قبل الاختيار", "Clear information before you choose"], ["خدمة قريبة", "Care close to home"], ["تجربة سهلة من مكان واحد", "An easy experience in one place"], ["طبيعي بوعي", "Natural care, with awareness"], ["لا نخلط الطبيعي بالآمن تلقائيًا", "Natural does not always mean safe"], ["وضوح وخصوصية", "Clarity & privacy"], ["معلوماتك وقرارك في أمان", "Your information and choice stay safe"],
@@ -133,6 +134,15 @@ function PharmacyMark({ light = false, compact = false }: { light?: boolean; com
   );
 }
 
+function AvailabilityBadge({ compact = false, language }: { compact?: boolean; language: Language }) {
+  return (
+    <span className={compact ? "availability-badge compact" : "availability-badge"} aria-label={language === "ar" ? "مفتوحة 24/7" : "Open 24/7"}>
+      <span className="availability-dot" aria-hidden="true" />
+      <span className="availability-icon"><Clock size={compact ? 15 : 17} /></span>
+      <span className="availability-copy"><strong>{language === "ar" ? "مفتوحة 24/7" : "Open 24/7"}</strong><small>{language === "ar" ? "خدمة على مدار الساعة" : "Round-the-clock service"}</small></span>
+    </span>
+  );
+}
 function SectionHeading({ eyebrow, title, body, light = false }: { eyebrow: string; title: string; body?: string; light?: boolean }) {
   return (
     <div className={light ? "section-heading light" : "section-heading"}>
@@ -246,7 +256,7 @@ function App() {
         <div className="welcome-glow glow-one" />
         <div className="welcome-glow glow-two" />
         <div className="welcome-content">
-          <div className="welcome-topline"><span>صحة أفضل تبدأ بخطوة واعية</span><span className="welcome-status"><CircleCheck size={15} /> مفتوح لخدمتك</span><span className="welcome-preferences"><button className="welcome-control" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"}>{theme === "light" ? <Moon size={15} /> : <Sun size={15} />}</button><button className="welcome-control welcome-language" type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"}><Languages size={14} /><span>{language === "ar" ? "EN" : "عربي"}</span></button></span></div>
+          <div className="welcome-topline"><span>صحة أفضل تبدأ بخطوة واعية</span><AvailabilityBadge language={language} /><span className="welcome-preferences"><button className="welcome-control" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"}>{theme === "light" ? <Moon size={15} /> : <Sun size={15} />}</button><button className="welcome-control welcome-language" type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"}><Languages size={14} /><span>{language === "ar" ? "EN" : "عربي"}</span></button></span></div>
           <div className="welcome-center">
             <div className="welcome-logo-wrap"><PharmacyMark light /></div>
             <span className="welcome-kicker">أهلًا بك في</span>
@@ -276,6 +286,7 @@ function App() {
             <button type="button" onClick={() => goTo("natural")}>العلاج البديل</button>
           </nav>
           <div className="header-actions">
+            <AvailabilityBadge compact language={language} />
             <button className="header-theme-toggle" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"} title={theme === "light" ? "Dark mode" : "Light mode"}>{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}</button>
             <button className="language-toggle" type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"} title={language === "ar" ? "English" : "العربية"}><Languages size={16} /><span>{language === "ar" ? "EN" : "عربي"}</span></button>
             <button className="header-search" type="button" aria-label={language === "ar" ? "البحث" : "Search"} onClick={() => showToast("سيتم تفعيل البحث قريبًا")}><Search size={19} /></button>

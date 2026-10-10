@@ -476,3 +476,29 @@ body { transition: background .35s ease, color .35s ease; }
 [dir="ltr"] .beauty-card em { right: 12px; left: auto; }
 [dir="ltr"] .tip-copy a { direction: ltr; }
 [dir="ltr"] .natural-copy, [dir="ltr"] .consultation-banner { text-align: left; }
+/* 24/7 pharmacy availability badge */
+@keyframes availabilityPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(64, 199, 154, .34); } 50% { box-shadow: 0 0 0 5px rgba(64, 199, 154, 0); } }
+.availability-badge { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 7px 12px; border: 1px solid rgba(64, 199, 154, .32); border-radius: 15px; color: var(--teal-900); background: rgba(228, 248, 242, .9); box-shadow: 0 8px 22px rgba(23, 115, 94, .12); white-space: nowrap; }
+.availability-badge.compact { min-height: 39px; padding: 5px 9px; border-radius: 12px; gap: 7px; }
+.availability-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: #40c79a; animation: availabilityPulse 2.2s ease-in-out infinite; }
+.availability-icon { display: grid; place-items: center; width: 28px; height: 28px; flex: 0 0 auto; border-radius: 9px; color: #16836f; background: rgba(64, 199, 154, .16); }
+.availability-badge.compact .availability-icon { width: 24px; height: 24px; border-radius: 7px; }
+.availability-copy { display: grid; gap: 2px; text-align: right; line-height: 1; }
+.availability-copy strong { color: var(--teal-900); font-size: 11px; font-weight: 950; letter-spacing: .01em; }
+.availability-copy small { color: var(--text-2); font-size: 9px; font-weight: 700; }
+.availability-badge.compact .availability-copy small { display: none; }
+.availability-badge.compact .availability-copy strong { font-size: 10px; }
+[data-theme="dark"] .availability-badge { border-color: rgba(111, 225, 190, .3); color: #e8fff8; background: rgba(18, 66, 63, .9); box-shadow: 0 8px 22px rgba(0, 0, 0, .18); }
+[data-theme="dark"] .availability-copy strong { color: #e8fff8; }
+[data-theme="dark"] .availability-copy small { color: #a8cec4; }
+[data-theme="dark"] .availability-icon { color: #a8eddd; background: rgba(111, 225, 190, .14); }
+.welcome-screen .availability-badge { border-color: rgba(165, 234, 219, .38); color: #effffb; background: rgba(7, 55, 56, .48); box-shadow: 0 10px 24px rgba(0, 0, 0, .12); }
+.welcome-screen .availability-copy strong { color: #effffb; }
+.welcome-screen .availability-copy small { color: rgba(236, 255, 250, .68); }
+.welcome-screen .availability-icon { color: var(--mint); background: rgba(165, 234, 219, .13); }
+[dir="ltr"] .availability-copy { text-align: left; }
+@media (max-width: 760px) {
+  .header-actions .availability-badge { display: none; }
+  .availability-badge { min-height: 42px; padding-inline: 9px; }
+  .availability-copy small { display: none; }
+}
