@@ -1,19 +1,23 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   Activity,
   ArrowLeft,
   ArrowRight,
   BadgeCheck,
   BookOpen,
+  CalendarDays,
+  ClipboardList,
   ChevronLeft,
   ChevronRight,
   CircleCheck,
   Home,
+  HeartPulse,
   Leaf,
   Languages,
+  LockKeyhole,
   Mail,
   Moon,
   MapPin,
@@ -158,8 +162,206 @@ function SectionHeading({ eyebrow, title, body, light = false }: { eyebrow: stri
   );
 }
 
+type PatientFormState = {
+  fullName: string;
+  age: string;
+  gender: string;
+  email: string;
+  phone: string;
+  whatsapp: boolean;
+  password: string;
+  confirmPassword: string;
+  city: string;
+  emergencyPhone: string;
+  height: string;
+  weight: string;
+  chronicDisease: "no" | "yes";
+  chronicConditions: string[];
+  allergies: string;
+  medications: string;
+  symptoms: string;
+  pregnancyStatus: string;
+  consent: boolean;
+};
+
+const emptyPatientForm: PatientFormState = {
+  fullName: "",
+  age: "",
+  gender: "",
+  email: "",
+  phone: "",
+  whatsapp: false,
+  password: "",
+  confirmPassword: "",
+  city: "",
+  emergencyPhone: "",
+  height: "",
+  weight: "",
+  chronicDisease: "no",
+  chronicConditions: [],
+  allergies: "",
+  medications: "",
+  symptoms: "",
+  pregnancyStatus: "",
+  consent: false,
+};
+
+function PatientIntakePage({ language, theme, languageSwitching, onBack }: { language: Language; theme: Theme; languageSwitching: boolean; onBack: () => void }) {
+  const isArabic = language === "ar";
+  const AuthDirectionArrow = isArabic ? ArrowLeft : ArrowRight;
+  const [form, setForm] = useState<PatientFormState>(emptyPatientForm);
+  const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const copy = isArabic ? {
+    back: "العودة إلى الرئيسية",
+    kicker: "تسجيل آمن وملف صحي أوضح",
+    title: "أدخل معلومات المريض لنساعدك بشكل أدق",
+    intro: "املأ البيانات المطلوبة حتى يتمكن الصيدلي من فهم حالتك وتقديم إرشاد عام أكثر ملاءمة، مع احترام خصوصيتك.",
+    visualTitle: "رعاية تبدأ من التفاصيل",
+    visualBody: "كل معلومة صحيحة تساعد فريق الشفاء على طرح السؤال المناسب قبل اقتراح أي خيار صحي.",
+    visualNote: "مراجعة بشرية وإرشاد واضح",
+    account: "بيانات الحساب",
+    accountHint: "استخدم بريدًا إلكترونيًا ورقمًا يمكنك الوصول إليهما.",
+    profile: "البيانات الشخصية",
+    health: "التاريخ الصحي",
+    contact: "التواصل والطوارئ",
+    fullName: "الاسم الكامل",
+    age: "العمر",
+    gender: "النوع",
+    male: "رجل",
+    female: "امرأة",
+    preferNot: "أفضل عدم التحديد",
+    email: "البريد الإلكتروني",
+    phone: "رقم الهاتف",
+    whatsapp: "هذا الرقم متصل بواتساب",
+    password: "كلمة المرور",
+    confirmPassword: "تأكيد كلمة المرور",
+    city: "المدينة / المحافظة",
+    emergencyPhone: "رقم للتواصل عند الطوارئ (اختياري)",
+    height: "الطول بالسنتيمتر (اختياري)",
+    weight: "الوزن بالكيلوجرام (اختياري)",
+    chronic: "هل لديك مرض مزمن؟",
+    yes: "نعم",
+    no: "لا",
+    conditions: "اختر الأمراض المزمنة إن وُجدت",
+    allergies: "الحساسيات المعروفة من أدوية أو أطعمة",
+    medications: "الأدوية أو المكملات المستخدمة حاليًا",
+    symptoms: "الأعراض أو سبب طلب المساعدة",
+    pregnancy: "الحمل أو الرضاعة (اختياري)",
+    notApplicable: "لا ينطبق",
+    notPregnant: "لا",
+    pregnant: "نعم",
+    consent: "أوافق على استخدام هذه المعلومات لتقديم إرشاد صيدلي عام، وأفهم أنها لا تغني عن زيارة الطبيب.",
+    privacy: "لا يتم حفظ البيانات الحساسة في المتصفح قبل ربط النظام بخدمة آمنة.",
+    submit: "حفظ البيانات والمتابعة",
+    success: "تمت مراجعة الحقول بنجاح. النموذج جاهز الآن للربط بخدمة حسابات آمنة وفريق الصيدلية.",
+    passwordError: "يجب أن تتطابق كلمتا المرور وأن تتكون كلمة المرور من 8 أحرف على الأقل.",
+    consentError: "يرجى الموافقة على ملاحظة الاستخدام قبل المتابعة.",
+  } : {
+    back: "Back to home",
+    kicker: "Secure sign-up and a clearer health profile",
+    title: "Tell us about the patient so we can help more accurately",
+    intro: "Complete the requested details so the pharmacist can understand the situation and provide more relevant general guidance while respecting privacy.",
+    visualTitle: "Care starts with details",
+    visualBody: "Every accurate detail helps the Al-Shifa team ask the right question before suggesting any health option.",
+    visualNote: "Human review and clear guidance",
+    account: "Account details",
+    accountHint: "Use an email and phone number you can access.",
+    profile: "Personal profile",
+    health: "Health history",
+    contact: "Contact and emergency",
+    fullName: "Full name",
+    age: "Age",
+    gender: "Gender",
+    male: "Man",
+    female: "Woman",
+    preferNot: "Prefer not to say",
+    email: "Email address",
+    phone: "Phone number",
+    whatsapp: "This number is connected to WhatsApp",
+    password: "Password",
+    confirmPassword: "Confirm password",
+    city: "City / governorate",
+    emergencyPhone: "Emergency contact number (optional)",
+    height: "Height in cm (optional)",
+    weight: "Weight in kg (optional)",
+    chronic: "Do you have a chronic condition?",
+    yes: "Yes",
+    no: "No",
+    conditions: "Select chronic conditions if applicable",
+    allergies: "Known medicine or food allergies",
+    medications: "Current medicines or supplements",
+    symptoms: "Symptoms or reason for seeking help",
+    pregnancy: "Pregnancy or breastfeeding (optional)",
+    notApplicable: "Not applicable",
+    notPregnant: "No",
+    pregnant: "Yes",
+    consent: "I agree to use this information for general pharmacy guidance and understand it does not replace a doctor visit.",
+    privacy: "Sensitive data is not stored in the browser before a secure service is connected.",
+    submit: "Save details and continue",
+    success: "The fields were validated successfully. The form is ready to connect to a secure account service and pharmacy team.",
+    passwordError: "Passwords must match and contain at least 8 characters.",
+    consentError: "Please accept the information-use notice before continuing.",
+  };
+  const chronicOptions = isArabic ? [
+    ["diabetes", "السكري"], ["hypertension", "الضغط المرتفع"], ["heart", "أمراض القلب"], ["asthma", "الربو"], ["kidney", "أمراض الكلى"], ["liver", "أمراض الكبد"], ["other", "أخرى"],
+  ] : [
+    ["diabetes", "Diabetes"], ["hypertension", "High blood pressure"], ["heart", "Heart disease"], ["asthma", "Asthma"], ["kidney", "Kidney disease"], ["liver", "Liver disease"], ["other", "Other"],
+  ];
+  const setField = <K extends keyof PatientFormState>(key: K, value: PatientFormState[K]) => {
+    setForm((current) => ({ ...current, [key]: value }));
+    setError("");
+    setSubmitted(false);
+  };
+  const toggleCondition = (value: string) => {
+    setForm((current) => ({ ...current, chronicConditions: current.chronicConditions.includes(value) ? current.chronicConditions.filter((item) => item !== value) : [...current.chronicConditions, value] }));
+    setSubmitted(false);
+  };
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (form.password.length < 8 || form.password !== form.confirmPassword) {
+      setError(copy.passwordError);
+      return;
+    }
+    if (!form.consent) {
+      setError(copy.consentError);
+      return;
+    }
+    setError("");
+    setSubmitted(true);
+  };
+  return (
+    <main className={languageSwitching ? "auth-screen language-switching" : "auth-screen"} dir={isArabic ? "rtl" : "ltr"} data-theme={theme}>
+      <div className="auth-background" aria-hidden="true" />
+      <div className="auth-page">
+        <button className="auth-back" type="button" onClick={onBack}><AuthDirectionArrow size={18} /> <span>{copy.back}</span></button>
+        <div className="auth-shell">
+          <aside className="auth-visual">
+            <div className="auth-visual-top"><PharmacyMark light /><AvailabilityBadge language={language} /></div>
+            <div className="auth-visual-copy"><span className="auth-kicker"><HeartPulse size={16} /> {copy.kicker}</span><h1>{copy.visualTitle}</h1><p>{copy.visualBody}</p></div>
+            <div className="auth-avatar-stage"><span className="auth-avatar-glow" /><Image className="auth-doctor-avatar" src="/generated/doctor-avatar-3d.png" alt={isArabic ? "دكتورة ثلاثية الأبعاد" : "3D female doctor"} width={720} height={720} priority /></div>
+            <div className="auth-visual-note"><CircleCheck size={18} /><span>{copy.visualNote}</span></div>
+          </aside>
+          <section className="auth-form-panel" aria-labelledby="auth-title">
+            <div className="auth-form-heading"><span className="auth-eyebrow"><ClipboardList size={16} /> {copy.kicker}</span><h2 id="auth-title">{copy.title}</h2><p>{copy.intro}</p><div className="auth-safety-note"><ShieldCheck size={17} /><span>{copy.privacy}</span></div></div>
+            {submitted ? <div className="auth-success" role="status"><CircleCheck size={19} /><span>{copy.success}</span></div> : null}
+            {error ? <div className="auth-error" role="alert"><ShieldCheck size={18} /><span>{error}</span></div> : null}
+            <form className="patient-form" onSubmit={handleSubmit}>
+              <fieldset className="auth-form-section"><legend><span className="auth-section-icon"><LockKeyhole size={17} /></span>{copy.account}</legend><p className="auth-section-hint">{copy.accountHint}</p><div className="auth-form-grid"><label className="auth-field"><span>{copy.email} *</span><span className="auth-input-wrap"><Mail size={17} /><input type="email" required value={form.email} onChange={(event) => setField("email", event.target.value)} placeholder="name@example.com" /></span></label><label className="auth-field"><span>{copy.password} *</span><span className="auth-input-wrap"><LockKeyhole size={17} /><input type="password" required minLength={8} value={form.password} onChange={(event) => setField("password", event.target.value)} /></span></label><label className="auth-field"><span>{copy.confirmPassword} *</span><span className="auth-input-wrap"><LockKeyhole size={17} /><input type="password" required minLength={8} value={form.confirmPassword} onChange={(event) => setField("confirmPassword", event.target.value)} /></span></label></div></fieldset>
+              <fieldset className="auth-form-section"><legend><span className="auth-section-icon"><UserRound size={17} /></span>{copy.profile}</legend><div className="auth-form-grid"><label className="auth-field auth-field-wide"><span>{copy.fullName} *</span><span className="auth-input-wrap"><UserRound size={17} /><input required value={form.fullName} onChange={(event) => setField("fullName", event.target.value)} /></span></label><label className="auth-field"><span>{copy.age} *</span><span className="auth-input-wrap"><CalendarDays size={17} /><input type="number" required min="0" max="120" value={form.age} onChange={(event) => setField("age", event.target.value)} /></span></label><label className="auth-field"><span>{copy.gender} *</span><span className="auth-input-wrap"><UserRound size={17} /><select required value={form.gender} onChange={(event) => setField("gender", event.target.value)}><option value="">{isArabic ? "اختر" : "Select"}</option><option value="male">{copy.male}</option><option value="female">{copy.female}</option><option value="private">{copy.preferNot}</option></select></span></label><label className="auth-field"><span>{copy.height}</span><span className="auth-input-wrap"><Activity size={17} /><input type="number" min="0" value={form.height} onChange={(event) => setField("height", event.target.value)} /></span></label><label className="auth-field"><span>{copy.weight}</span><span className="auth-input-wrap"><Activity size={17} /><input type="number" min="0" value={form.weight} onChange={(event) => setField("weight", event.target.value)} /></span></label></div></fieldset>
+              <fieldset className="auth-form-section"><legend><span className="auth-section-icon"><PhoneCall size={17} /></span>{copy.contact}</legend><div className="auth-form-grid"><label className="auth-field"><span>{copy.phone} *</span><span className="auth-input-wrap"><PhoneCall size={17} /><input type="tel" required value={form.phone} onChange={(event) => setField("phone", event.target.value)} placeholder="01XXXXXXXXX" /></span></label><label className="auth-field"><span>{copy.city}</span><span className="auth-input-wrap"><MapPin size={17} /><input value={form.city} onChange={(event) => setField("city", event.target.value)} /></span></label><label className="auth-field auth-field-wide"><span>{copy.emergencyPhone}</span><span className="auth-input-wrap"><PhoneCall size={17} /><input type="tel" value={form.emergencyPhone} onChange={(event) => setField("emergencyPhone", event.target.value)} /></span></label><label className="auth-check auth-field-wide"><input type="checkbox" checked={form.whatsapp} onChange={(event) => setField("whatsapp", event.target.checked)} /><span>{copy.whatsapp}</span></label></div></fieldset>
+              <fieldset className="auth-form-section"><legend><span className="auth-section-icon"><HeartPulse size={17} /></span>{copy.health}</legend><div className="auth-question"><span>{copy.chronic} *</span><div className="auth-choice-row"><label className={form.chronicDisease === "no" ? "auth-choice active" : "auth-choice"}><input type="radio" name="chronicDisease" checked={form.chronicDisease === "no"} onChange={() => setField("chronicDisease", "no")} />{copy.no}</label><label className={form.chronicDisease === "yes" ? "auth-choice active" : "auth-choice"}><input type="radio" name="chronicDisease" checked={form.chronicDisease === "yes"} onChange={() => setField("chronicDisease", "yes")} />{copy.yes}</label></div></div>{form.chronicDisease === "yes" ? <div className="auth-condition-block"><span>{copy.conditions}</span><div className="auth-check-grid">{chronicOptions.map(([value, label]) => <label className="auth-check" key={value}><input type="checkbox" checked={form.chronicConditions.includes(value)} onChange={() => toggleCondition(value)} /><span>{label}</span></label>)}</div></div> : null}<div className="auth-form-grid"><label className="auth-field auth-field-wide"><span>{copy.symptoms} *</span><textarea required rows={3} value={form.symptoms} onChange={(event) => setField("symptoms", event.target.value)} /></label><label className="auth-field"><span>{copy.allergies}</span><textarea rows={3} value={form.allergies} onChange={(event) => setField("allergies", event.target.value)} /></label><label className="auth-field"><span>{copy.medications}</span><textarea rows={3} value={form.medications} onChange={(event) => setField("medications", event.target.value)} /></label><label className="auth-field"><span>{copy.pregnancy}</span><span className="auth-input-wrap"><HeartPulse size={17} /><select value={form.pregnancyStatus} onChange={(event) => setField("pregnancyStatus", event.target.value)}><option value="">{copy.notApplicable}</option><option value="no">{copy.notPregnant}</option><option value="yes">{copy.pregnant}</option></select></span></label></div></fieldset>
+              <label className="auth-consent"><input type="checkbox" required checked={form.consent} onChange={(event) => setField("consent", event.target.checked)} /><span>{copy.consent}</span></label><button className="auth-submit button-primary" type="submit">{copy.submit} <AuthDirectionArrow size={18} /></button>
+            </form>
+          </section>
+        </div>
+      </div>
+    </main>
+  );
+}
 function App() {
   const [welcomeVisible, setWelcomeVisible] = useState(true);
+  const [authVisible, setAuthVisible] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const [tipIndex, setTipIndex] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
@@ -286,6 +488,10 @@ function App() {
     );
   }
 
+  if (authVisible) {
+    return <PatientIntakePage language={language} theme={theme} languageSwitching={languageSwitching} onBack={() => setAuthVisible(false)} />;
+  }
+
   return (
     <main className={languageSwitching ? "site-shell language-switching" : "site-shell"} dir={language === "ar" ? "rtl" : "ltr"} data-theme={theme}>
       <div className="site-background" aria-hidden="true" />
@@ -300,6 +506,7 @@ function App() {
             <button type="button" onClick={() => goTo("beauty")}><Sparkles size={18} /><span className="nav-label">العناية والجمال</span></button>
             <button type="button" onClick={() => goTo("tips")}><BookOpen size={18} /><span className="nav-label">إرشادات طبية</span></button>
             <button type="button" onClick={() => goTo("natural")}><Leaf size={18} /><span className="nav-label">العلاج البديل</span></button>
+            <button className="mobile-login-nav" type="button" onClick={() => { setMobileMenu(false); setAuthVisible(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}><UserRound size={18} /><span className="nav-label">تسجيل الدخول</span></button>
           </nav>
           <div className="header-actions">
             <AvailabilityBadge language={language} />
@@ -309,7 +516,7 @@ function App() {
               <button className={languageSwitching ? "language-toggle is-switching" : "language-toggle"} type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"} title={language === "ar" ? "English" : "العربية"}><Languages size={16} /><span>{language === "ar" ? "EN" : "عربي"}</span></button>
               <button className="header-search" type="button" aria-label={language === "ar" ? "البحث" : "Search"} onClick={() => showToast("سيتم تفعيل البحث قريبًا")}><Search size={19} /></button>
             </div>
-            <button className="header-login" type="button" onClick={() => showToast("تسجيل الدخول سيكون متاحًا قريبًا")}><UserRound size={17} /><span>تسجيل الدخول</span></button>
+            <button className="header-login" type="button" onClick={() => { setMobileMenu(false); setAuthVisible(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}><UserRound size={17} /><span>تسجيل الدخول</span></button>
           </div>
         </div>
       </header>
