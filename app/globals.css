@@ -470,3 +470,9 @@ body { transition: background .35s ease, color .35s ease; }
   [dir="ltr"] .mobile-nav-close { right: 20px; left: auto; }
   .natural-art { min-height: 290px; }
 }
+/* English layout polish */
+[dir="ltr"] .main-nav button { text-align: left; }
+[dir="ltr"] .tip-copy { direction: ltr; }
+[dir="ltr"] .beauty-card em { right: 12px; left: auto; }
+[dir="ltr"] .tip-copy a { direction: ltr; }
+[dir="ltr"] .natural-copy, [dir="ltr"] .consultation-banner { text-align: left; }
