@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import {
   Activity,
@@ -15,6 +16,7 @@ import {
   ChevronRight,
   CircleCheck,
   Home,
+  Info,
   HeartPulse,
   Leaf,
   Languages,
@@ -517,6 +519,7 @@ function PatientIntakePage({ language, theme, languageSwitching, onBack }: { lan
   );
 }
 function App() {
+  const router = useRouter();
   const [welcomeVisible, setWelcomeVisible] = useState(true);
   const [authVisible, setAuthVisible] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -673,6 +676,8 @@ function App() {
             <button type="button" onClick={() => goTo("beauty")}><Sparkles size={18} /><span className="nav-label">العناية والجمال</span></button>
             <button type="button" onClick={() => goTo("tips")}><BookOpen size={18} /><span className="nav-label">إرشادات طبية</span></button>
             <button type="button" onClick={() => goTo("natural")}><Leaf size={18} /><span className="nav-label">العلاج البديل</span></button>
+            <button type="button" onClick={() => router.push("/about")}><Info size={18} /><span className="nav-label">عن الصيدلية</span></button>
+            <button type="button" onClick={() => router.push("/contact")}><PhoneCall size={18} /><span className="nav-label">تواصل معنا</span></button>
             <button className="mobile-login-nav" type="button" onClick={() => { setMobileMenu(false); setAuthVisible(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}><UserRound size={18} /><span className="nav-label">تسجيل الدخول</span></button>
           </nav>
           <div className="header-actions">
@@ -828,7 +833,7 @@ function App() {
       <footer id="footer" className="site-footer">
         <div className="footer-top">
           <div className="footer-brand"><PharmacyMark light language={language} /><p>في صيدلية الشفاء، نؤمن أن الرعاية الصحية تبدأ من معلومة واضحة وقلب حاضر.</p><div className="social-links"><a href="#footer" aria-label="فيسبوك"><span aria-hidden="true">f</span></a><a href="#footer" aria-label="إنستغرام"><span aria-hidden="true">ig</span></a><a href="#footer" aria-label="يوتيوب"><span aria-hidden="true">▶</span></a></div></div>
-          <div className="footer-column"><strong>روابط سريعة</strong><button type="button" onClick={() => goTo("conditions")}>الحالات الصحية</button><button type="button" onClick={() => goTo("beauty")}>العناية والجمال</button><button type="button" onClick={() => goTo("tips")}>الإرشادات الطبية</button></div>
+          <div className="footer-column"><strong>روابط سريعة</strong><button type="button" onClick={() => goTo("conditions")}>الحالات الصحية</button><button type="button" onClick={() => goTo("beauty")}>العناية والجمال</button><button type="button" onClick={() => goTo("tips")}>الإرشادات الطبية</button><button type="button" onClick={() => router.push("/about")}>عن الصيدلية</button><button type="button" onClick={() => router.push("/contact")}>تواصل معنا</button></div>
           <div className="footer-column"><strong>خدمات الشفاء</strong><button type="button" onClick={() => showToast("سيتم تفعيل رفع الوصفة قريبًا")}>رفع وصفة طبية</button><button type="button" onClick={() => showToast("سيتم تفعيل التوصيل قريبًا")}>توصيل إلى المنزل</button><button type="button" onClick={() => showToast("سيتم تفعيل الاستشارة قريبًا")}>استشارة صيدلي</button></div>
           <div className="footer-contact"><strong>تواصل معنا</strong><span><PhoneCall size={16} /> ١٦٦٢٣</span><span><Mail size={16} /> hello@alshifa.example</span><span><MapPin size={16} /> القاهرة، مصر</span></div>
         </div>
