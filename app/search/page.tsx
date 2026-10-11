@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type PointerEvent } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -60,7 +60,7 @@ const medicines: Medicine[] = [
     id: "panadol-500",
     ar: "بانادول 500 مجم",
     en: "Panadol 500 mg",
-    aliases: ["باراسيتامول", "paracetamol", "acetaminophen", "panadol"],
+    aliases: ["باراسيتامول", "paracetamol", "acetaminophen", "panadol", "الألم والحرارة", "العناية بالأطفال"],
     image: "/generated/medicines/panadol-500mg.png",
     categoryAr: "مسكن وخافض للحرارة",
     categoryEn: "Pain reliever & fever reducer",
@@ -84,7 +84,7 @@ const medicines: Medicine[] = [
     id: "brufen-400",
     ar: "بروفين 400 مجم",
     en: "Brufen 400 mg",
-    aliases: ["إيبوبروفين", "ibuprofen", "brufen"],
+    aliases: ["إيبوبروفين", "ibuprofen", "brufen", "الألم والحرارة"],
     image: "/generated/medicines/brufen-400mg.png",
     categoryAr: "مسكن ومضاد للالتهاب",
     categoryEn: "Pain reliever & anti-inflammatory",
@@ -127,7 +127,7 @@ const medicines: Medicine[] = [
     id: "gaviscon-double-action",
     ar: "جافيسكون دبل أكشن",
     en: "Gaviscon Double Action",
-    aliases: ["حموضة", "ارتجاع", "reflux", "gaviscon"],
+    aliases: ["حموضة", "ارتجاع", "reflux", "gaviscon", "الجهاز الهضمي"],
     image: "/generated/medicines/gaviscon-double-action-liquid-150ml.png",
     categoryAr: "للحموضة والارتجاع",
     categoryEn: "For heartburn & reflux",
@@ -164,6 +164,26 @@ const medicines: Medicine[] = [
     forms: [{ id: "tablet", ar: "أقراص ممتدة المفعول", en: "Extended-release tablets", routeAr: "عن طريق الفم", routeEn: "By mouth" }],
   },
   {
+    id: "concor-5",
+    ar: "كونكور 5 مجم",
+    en: "Concor 5 mg",
+    aliases: ["بيسوبرولول", "bisoprolol", "concor", "ضغط", "القلب"],
+    image: "/generated/medicines/concor-5mg.png",
+    categoryAr: "لضغط الدم وبعض حالات القلب",
+    categoryEn: "For blood pressure and selected heart conditions",
+    bodySystemAr: "الضغط والقلب",
+    bodySystemEn: "Blood pressure & heart",
+    indicationsAr: ["يُستخدم ضمن خطة علاجية يحددها الطبيب", "قد يُوصف لبعض حالات ضغط الدم أو القلب حسب التقييم"],
+    indicationsEn: ["Used as part of a clinician-led treatment plan", "May be prescribed for selected blood-pressure or heart conditions"],
+    ageAr: "دواء بوصفة ومتابعة؛ لا تبدأه أو توقفه فجأة، والجرعة يحددها الطبيب.",
+    ageEn: "Prescription and monitoring are required; do not start or stop it suddenly, and follow the prescribed dose.",
+    avoidAr: ["بطء شديد في نبض القلب أو انخفاض الضغط", "الربو أو مشاكل التنفس دون سؤال الطبيب", "الحمل أو الرضاعة دون توجيه طبي"],
+    avoidEn: ["Very slow heart rate or low blood pressure", "Asthma or breathing problems without medical advice", "Pregnancy or breastfeeding without guidance"],
+    warningAr: "هذه معلومات تعريفية وليست بديلًا عن الطبيب؛ لا تغيّر جرعتك ولا توقف العلاج من نفسك.",
+    warningEn: "This is identification information, not a substitute for medical care; never change or stop it on your own.",
+    forms: [{ id: "tablet", ar: "أقراص", en: "Tablets", routeAr: "عن طريق الفم", routeEn: "By mouth" }],
+  },
+  {
     id: "ventolin-inhaler",
     ar: "فنتولين بخاخ",
     en: "Ventolin Inhaler",
@@ -187,7 +207,7 @@ const medicines: Medicine[] = [
     id: "aerius-5",
     ar: "أيريوس 5 مجم",
     en: "Aerius 5 mg",
-    aliases: ["ديسلوراتادين", "desloratadine", "aerius", "حساسية"],
+    aliases: ["ديسلوراتادين", "desloratadine", "aerius", "حساسية", "البرد والحساسية"],
     image: "/generated/medicines/aerius-5mg.png",
     categoryAr: "مضاد للحساسية",
     categoryEn: "Antihistamine",
@@ -263,10 +283,14 @@ function AnatomySearchViewer({ language }: { language: Language }) {
     startX.current = null;
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
   };
+  const keyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowRight") move(isArabic ? -1 : 1);
+    if (event.key === "ArrowLeft") move(isArabic ? 1 : -1);
+  };
   return (
     <div className="search-anatomy-card">
       <div className="search-anatomy-heading"><span className="search-eyebrow"><Activity size={14} /> {isArabic ? "مرجع بصري تفاعلي" : "Interactive visual reference"}</span><strong>{isArabic ? "جسم الإنسان" : "Human body"}</strong><small>{isArabic ? "اسحب للتدوير بين الجهات الأربع" : "Drag to rotate through four views"}</small></div>
-      <div className="search-anatomy-viewer" onPointerDown={down} onPointerMove={movePointer} onPointerUp={up} onPointerCancel={up} role="application" tabIndex={0} aria-label={isArabic ? "عارض الجسم التشريحي" : "Anatomy viewer"}>
+      <div className="search-anatomy-viewer" onKeyDown={keyDown} onPointerDown={down} onPointerMove={movePointer} onPointerUp={up} onPointerCancel={up} role="application" tabIndex={0} aria-label={isArabic ? "عارض الجسم التشريحي" : "Anatomy viewer"}>
         <span className="search-anatomy-halo" aria-hidden="true" />
         <Image src={anatomyViews[index].file} alt={isArabic ? "المنظر " + anatomyViews[index].ar : anatomyViews[index].en + " view"} width={400} height={600} unoptimized draggable={false} />
         <span className="search-anatomy-hint"><RotateCw size={14} /> {isArabic ? "اسحب للتدوير" : "Drag to rotate"}</span>
@@ -297,14 +321,27 @@ export default function SearchPage() {
   const matches = useMemo(() => {
     const needle = normalize(query);
     if (!needle) return medicines.slice(0, 6);
-    return medicines.filter((medicine) => [medicine.ar, medicine.en, ...medicine.aliases].some((term) => normalize(term).includes(needle))).slice(0, 7);
+    return medicines.filter((medicine) => [medicine.ar, medicine.en, ...medicine.aliases, medicine.bodySystemAr, medicine.bodySystemEn].some((term) => normalize(term).includes(needle))).slice(0, 7);
   }, [query]);
+  const noResults = query.trim().length > 0 && matches.length === 0;
 
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem("al-shifa-language");
       if (stored === "en") setLanguage("en");
     } catch {}
+  }, []);
+
+  useEffect(() => {
+    const initialQuery = new URLSearchParams(window.location.search).get("q")?.trim();
+    if (!initialQuery) return;
+    setQuery(initialQuery);
+    const needle = normalize(initialQuery);
+    const match = medicines.find((medicine) => [medicine.ar, medicine.en, ...medicine.aliases, medicine.bodySystemAr, medicine.bodySystemEn].some((term) => normalize(term).includes(needle)));
+    if (match) {
+      setSelectedId(match.id);
+      setFormId(match.forms[0].id);
+    }
   }, []);
 
   useEffect(() => {
@@ -337,14 +374,14 @@ export default function SearchPage() {
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={isArabic ? "مثال: بانادول أو Panadol أو باراسيتامول" : "Example: Panadol, Brufen, or paracetamol"} aria-label={isArabic ? "اسم العلاج" : "Medicine name"} autoComplete="off" />
             <button type="submit">{isArabic ? "بحث" : "Search"} <ArrowLeft size={17} /></button>
           </form>
-          <div className="search-suggestion-panel" aria-live="polite"><span><Info size={15} /> {isArabic ? "مساعدة في الكتابة" : "Typing help"}</span><p>{isArabic ? "جرّب الاسم التجاري أو المادة الفعالة بالعربية والإنجليزية:" : "Try a brand name or active ingredient in Arabic or English:"}</p><div>{matches.map((medicine) => <button key={medicine.id} type="button" onClick={() => chooseMedicine(medicine)}>{medicine.ar} <small>{medicine.en}</small></button>)}</div></div>
+          <div className="search-suggestion-panel" aria-live="polite"><span><Info size={15} /> {isArabic ? "مساعدة في الكتابة" : "Typing help"}</span><p>{isArabic ? "جرّب الاسم التجاري أو المادة الفعالة بالعربية والإنجليزية:" : "Try a brand name or active ingredient in Arabic or English:"}</p><div>{matches.length ? matches.map((medicine) => <button key={medicine.id} type="button" onClick={() => chooseMedicine(medicine)}>{medicine.ar} <small>{medicine.en}</small></button>) : <span className="search-no-suggestions">{isArabic ? "لم نجد علاجًا مطابقًا. جرّب اسمًا تجاريًا أو مادة فعالة مختلفة." : "No matching medicine yet. Try another brand or active ingredient."}</span>}</div></div>
         </div>
         <div className="search-hero-orb"><span className="search-orb-ring ring-one" /><span className="search-orb-ring ring-two" /><Image src="/generated/health-profile-card.png" alt="" width={280} height={280} unoptimized /></div>
       </section>
 
       <section className="search-result-section" aria-live="polite">
-        <div className="search-result-header"><div><span className="search-eyebrow"><CircleCheck size={15} /> {isArabic ? "نتيجة البحث" : "Search result"}</span><h2>{isArabic ? selectedMedicine.ar : selectedMedicine.en}</h2><p>{isArabic ? selectedMedicine.categoryAr : selectedMedicine.categoryEn}</p></div><span className="search-result-tag"><ShieldCheck size={15} /> {isArabic ? "معلومات تعليمية" : "Educational information"}</span></div>
-        <div className="search-result-grid">
+        <div className="search-result-header"><div><span className="search-eyebrow"><CircleCheck size={15} /> {isArabic ? "نتيجة البحث" : "Search result"}</span><h2>{noResults ? (isArabic ? "لا توجد نتيجة مطابقة" : "No matching result") : (isArabic ? selectedMedicine.ar : selectedMedicine.en)}</h2><p>{noResults ? (isArabic ? "جرّب اسمًا آخر أو راجع الكتابة." : "Try another name or check the spelling.") : (isArabic ? selectedMedicine.categoryAr : selectedMedicine.categoryEn)}</p></div><span className="search-result-tag"><ShieldCheck size={15} /> {isArabic ? "معلومات تعليمية" : "Educational information"}</span></div>
+        <>{noResults ? <div className="search-no-result-card"><Search size={26} /><h3>{isArabic ? "لم نعثر على هذا العلاج بعد" : "We could not find that medicine yet"}</h3><p>{isArabic ? "تحقق من الكتابة أو جرّب الاسم التجاري أو المادة الفعالة بالعربية والإنجليزية." : "Check the spelling or try the brand name or active ingredient in Arabic or English."}</p><button type="button" onClick={() => setQuery("")}>{isArabic ? "عرض الاقتراحات" : "Show suggestions"}</button></div> : <div className="search-result-grid">
           <article className="search-product-card">
             <div className="search-product-visual"><Image src={selectedMedicine.image} alt={isArabic ? selectedMedicine.ar : selectedMedicine.en} width={330} height={330} unoptimized /><span>{isArabic ? "صورة المنتج للتعرّف البصري" : "Visual product reference"}</span></div>
             <div className="search-product-copy"><span className="search-card-kicker"><Package size={15} /> {isArabic ? "الأشكال المتاحة" : "Available forms"}</span><h3>{isArabic ? selectedMedicine.ar : selectedMedicine.en}</h3><p>{isArabic ? "اختر الشكل الدوائي المتوفر مع هذا المنتج لعرض طريقة الاستخدام العامة." : "Choose an available form to see its general route of use."}</p><div className="medicine-form-grid">{selectedMedicine.forms.map((form) => <button type="button" key={form.id} className={form.id === selectedForm.id ? "medicine-form active" : "medicine-form"} onClick={() => setFormId(form.id)}><span><FormIcon type={form.id} /></span><strong>{isArabic ? form.ar : form.en}</strong><small>{isArabic ? form.routeAr : form.routeEn}</small></button>)}</div><div className="selected-form-note"><strong>{isArabic ? selectedForm.ar : selectedForm.en}</strong><span>{isArabic ? selectedForm.routeAr : selectedForm.routeEn}</span></div></div>
@@ -353,7 +390,7 @@ export default function SearchPage() {
           <AnatomySearchViewer language={language} />
 
           <article className="search-guidance-card"><div className="search-guidance-heading"><span className="search-eyebrow"><Activity size={15} /> {isArabic ? selectedMedicine.bodySystemAr : selectedMedicine.bodySystemEn}</span><h3>{isArabic ? "متى يُستخدم؟" : "What is it used for?"}</h3></div><ul>{indications.map((item) => <li key={item}><CircleCheck size={16} /> {item}</li>)}</ul><div className="search-age-note"><Info size={18} /><div><strong>{isArabic ? "ملاحظة العمر" : "Age note"}</strong><p>{isArabic ? selectedMedicine.ageAr : selectedMedicine.ageEn}</p></div></div><div className="search-avoid-note"><AlertTriangle size={18} /><div><strong>{isArabic ? "متى يجب تجنبه أو سؤال الطبيب؟" : "When to avoid or ask a doctor"}</strong><ul>{avoid.map((item) => <li key={item}>{item}</li>)}</ul></div></div><div className="search-doctor-note"><Stethoscope size={18} /><p>{isArabic ? selectedMedicine.warningAr : selectedMedicine.warningEn}</p></div></article>
-        </div>
+        </div>}</>
         <div className="search-disclaimer"><ShieldCheck size={19} /><p>{isArabic ? "المحتوى للتوعية والتعرّف على المنتج فقط، ولا يحدد التشخيص أو الجرعة. استشر طبيبك أو الصيدلي للحصول على نصيحة مناسبة لحالتك." : "This content is for education and product identification only. It does not diagnose or provide dosing. Ask your doctor or pharmacist for advice for your condition."}</p></div>
       </section>
 

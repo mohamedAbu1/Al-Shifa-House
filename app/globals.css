@@ -2164,6 +2164,12 @@ html {
 .search-suggestion-panel button { display: grid; gap: 1px; padding: 8px 11px; border: 1px solid rgba(165, 234, 219, .14); border-radius: 10px; color: #e6fff9; background: rgba(165, 234, 219, .06); font-size: 11px; font-weight: 900; text-align: start; cursor: pointer; }
 .search-suggestion-panel button:hover { border-color: #62dbc0; background: rgba(66, 204, 171, .16); }
 .search-suggestion-panel button small { color: rgba(239, 255, 251, .48); font-size: 9px; direction: ltr; text-align: start; }
+.search-no-suggestions { color: rgba(239, 255, 251, .55); font-size: 10px; line-height: 1.7; }
+.search-no-result-card { display: grid; max-width: 760px; margin-top: 22px; padding: 34px; place-items: start; gap: 10px; border: 1px solid rgba(165, 234, 219, .16); border-radius: 25px; color: #eafff9; background: linear-gradient(145deg, rgba(19, 64, 63, .92), rgba(8, 40, 42, .96)); box-shadow: 0 22px 55px rgba(0, 0, 0, .16); }
+.search-no-result-card > svg { color: #6cdec3; }
+.search-no-result-card h3 { margin: 2px 0 0; font-size: 22px; }
+.search-no-result-card p { max-width: 560px; margin: 0; color: rgba(239, 255, 251, .62); font-size: 12px; line-height: 1.8; }
+.search-no-result-card button { margin-top: 8px; padding: 11px 16px; border: 1px solid rgba(105, 219, 192, .4); border-radius: 12px; color: #073234; background: #74dfc5; font-size: 11px; font-weight: 950; cursor: pointer; }
 .search-hero-orb { position: relative; display: grid; min-height: 390px; place-items: center; isolation: isolate; }
 .search-hero-orb::before { position: absolute; width: 310px; height: 310px; border-radius: 50%; background: radial-gradient(circle, rgba(107, 221, 192, .3), rgba(107, 221, 192, .04) 60%, transparent 70%); content: ""; filter: blur(4px); }
 .search-hero-orb img { position: relative; width: min(75%, 310px); height: auto; filter: drop-shadow(0 28px 26px rgba(0, 0, 0, .3)); animation: anatomy-float 5s ease-in-out infinite; }

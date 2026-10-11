@@ -739,14 +739,14 @@ function App() {
           <button className="dashboard-profile-cta" type="button" onClick={() => { setAuthVisible(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}><UserRound size={18} /> <span>{language === "ar" ? "فتح ملفي الصحي" : "Open my health profile"}</span><DirectionArrow size={17} /></button>
         </div>
         <div className="dashboard-card-grid">
-          <button className="dashboard-card dashboard-card-prescriptions" type="button" onClick={() => showToast(language === "ar" ? "سيتم عرض وصفاتك الطبية هنا قريبًا" : "Your prescriptions will appear here soon")}>
+          <button className="dashboard-card dashboard-card-prescriptions" type="button" onClick={() => router.push("/?openProfile=1")}>
             <span className="dashboard-card-content"><span className="dashboard-card-icon"><ClipboardList size={21} /></span><strong>{language === "ar" ? "وصفاتي الطبية" : "My prescriptions"}</strong><small>{language === "ar" ? "كل وصفاتك في مكان واحد مع إرشاد الصيدلي." : "All your prescriptions in one place, with pharmacist guidance."}</small><span className="dashboard-card-link">{language === "ar" ? "عرض الوصفات" : "View prescriptions"} <DirectionArrow size={15} /></span></span>
             <GeneratedIcon src="prescription-card.png" className="dashboard-card-art" />
           </button>
-          <button className="dashboard-card dashboard-card-schedule" type="button" onClick={() => showToast(language === "ar" ? "سيتم تفعيل تذكيرات الجرعات قريبًا" : "Dose reminders will be available soon")}>
+          <button className="dashboard-card dashboard-card-schedule" type="button" onClick={() => router.push("/?openProfile=1")}>
             <span className="dashboard-card-content"><span className="dashboard-card-icon"><CalendarDays size={21} /></span><strong>{language === "ar" ? "مواعيد الجرعات" : "Medication times"}</strong><small>{language === "ar" ? "تذكيرات بسيطة تساعدك على الاستخدام المنتظم." : "Simple reminders to help you stay consistent."}</small><span className="dashboard-schedule-list"><span><b>08:00</b><em>{language === "ar" ? "جرعة الصباح" : "Morning dose"}</em><CircleCheck size={14} /></span><span><b>14:00</b><em>{language === "ar" ? "جرعة الظهر" : "Midday dose"}</em><CircleCheck size={14} /></span><span><b>20:00</b><em>{language === "ar" ? "جرعة المساء" : "Evening dose"}</em><CircleCheck size={14} /></span></span></span>
           </button>
-          <button className="dashboard-card dashboard-card-consult" type="button" onClick={() => showToast(language === "ar" ? "سيتم تفعيل الاستشارة الصيدلية قريبًا" : "Pharmacist consultation will be available soon")}>
+          <button className="dashboard-card dashboard-card-consult" type="button" onClick={() => router.push("/contact#contact-form")}>
             <span className="dashboard-card-content"><span className="dashboard-card-icon"><MessageCircle size={21} /></span><strong>{language === "ar" ? "اسأل الصيدلي" : "Ask the pharmacist"}</strong><small>{language === "ar" ? "احصل على إجابات صحية موثوقة من صيدلي مختص." : "Get trusted health answers from a qualified pharmacist."}</small><span className="dashboard-card-link">{language === "ar" ? "ابدأ الاستشارة" : "Start consultation"} <DirectionArrow size={15} /></span></span>
             <GeneratedIcon src="ask-pharmacist-card.png" className="dashboard-card-art" />
           </button>
@@ -756,7 +756,7 @@ function App() {
           </button>
         </div>
         <div className="dashboard-bottom-grid">
-          <button className="dashboard-wide-card dashboard-delivery-card" type="button" onClick={() => showToast(language === "ar" ? "سيتم تفعيل التوصيل إلى المنزل قريبًا" : "Home delivery will be available soon")}>
+          <button className="dashboard-wide-card dashboard-delivery-card" type="button" onClick={() => router.push("/contact")}>
             <span><span className="dashboard-wide-icon"><GeneratedIcon src="delivery-card.png" /></span><strong>{language === "ar" ? "توصيل إلى المنزل" : "Delivery to your door"}</strong><small>{language === "ar" ? "استلم احتياجاتك بسهولة وأمان." : "Receive your essentials with ease and care."}</small></span><DirectionArrow size={21} />
           </button>
           <button className="dashboard-wide-card dashboard-basics-card" type="button" onClick={() => goTo("tips")}>
@@ -769,7 +769,7 @@ function App() {
         <SectionHeading eyebrow="اختيارات تبدأ من احتياجك" title="علاجات الحالات الصحية الشائعة" body="تعرّف على الأقسام التي تساعدك في روتينك اليومي، واسأل الصيدلي قبل بدء أي علاج جديد." />
         <div className="condition-grid">
           {conditions.map(({ title, body, image, tone }) => (
-            <button className="condition-card" type="button" key={title} onClick={() => showToast("سيتم تجهيز قسم " + title + " قريبًا")}>
+            <button className="condition-card" type="button" key={title} onClick={() => router.push("/search?q=" + encodeURIComponent(title))}>
               <span className={"category-icon " + tone}><GeneratedIcon src={image} /></span>
               <span className="card-arrow">{language === "ar" ? <ChevronLeft size={17} /> : <ChevronRight size={17} />}</span>
               <strong>{title}</strong>
@@ -789,14 +789,14 @@ function App() {
           <SectionHeading eyebrow="العناية والجمال" title="اختياراتك الطبيعية، بأسلوب أهدأ" body="منتجات للعناية بالبشرة والشعر والزيوت الطبيعية والإكسسوارات الصحية، مع وصف واضح يساعدك على الاختيار." />
           <div className="beauty-grid">
             {beautyItems.map(({ title, body, image, tone, label }) => (
-              <button className="beauty-card" type="button" key={title} onClick={() => showToast("سيتم فتح " + title + " قريبًا")}>
+              <button className="beauty-card" type="button" key={title} onClick={() => router.push("/contact#contact-form")}>
                 <span className={"beauty-icon " + tone}><GeneratedIcon src={image} /></span>
                 <span><strong>{title}</strong><small>{body}</small></span>
                 <em>{label}</em>
               </button>
             ))}
           </div>
-          <button className="text-link" type="button" onClick={() => showToast("سيتم عرض المنتجات قريبًا")}>شاهد كل الاختيارات <DirectionArrow size={17} /></button>
+          <button className="text-link" type="button" onClick={() => router.push("/contact#contact-form")}>شاهد كل الاختيارات <DirectionArrow size={17} /></button>
         </div>
       </section>
 
@@ -820,21 +820,21 @@ function App() {
           <h2>العلاج البديل<br /><strong>بعلم ومسؤولية</strong></h2>
           <p>نعرّفك على الأعشاب والمكملات كجزء من حوار صحي متكامل، لا كبديل عن وصفة الطبيب أو المتابعة اللازمة.</p>
           <div className="natural-points"><span><CircleCheck size={17} /> مراجعة التداخلات الدوائية</span><span><CircleCheck size={17} /> اختيار مصادر موثوقة</span><span><CircleCheck size={17} /> سؤال الصيدلي قبل الاستخدام</span></div>
-          <button className="button-primary dark-button" type="button" onClick={() => showToast("سيتم فتح دليل العلاج البديل قريبًا")}>استكشف الدليل <DirectionArrow size={18} /></button>
+          <button className="button-primary dark-button" type="button" onClick={() => goTo("tips")}>استكشف الدليل <DirectionArrow size={18} /></button>
         </div>
         <div className="natural-art"><div className="leaf-orb orb-main"><GeneratedIcon src="natural-care-3d.png" className="natural-art-icon" /></div><div className="leaf-orb orb-small"><GeneratedIcon src="tip-herbs-3d.png" className="natural-drop-icon" /></div><span className="natural-pill pill-one">اعرف التداخلات</span><span className="natural-pill pill-two">لا توقف دواءك بنفسك</span></div>
       </section>
 
       <section className="consultation-banner content-section">
         <div><span className="section-eyebrow">تحتاج إجابة واضحة؟</span><h2>اسأل الصيدلي قبل أن تحتار.</h2><p>خطوة صغيرة من السؤال قد تجعل اختيارك الصحي أكثر أمانًا.</p></div>
-        <button className="button-primary" type="button" onClick={() => showToast("سيتم تفعيل الاستشارة قريبًا")}>تواصل معنا <MessageCircle size={18} /></button>
+        <button className="button-primary" type="button" onClick={() => router.push("/contact#contact-form")}>تواصل معنا <MessageCircle size={18} /></button>
       </section>
 
       <footer id="footer" className="site-footer">
         <div className="footer-top">
           <div className="footer-brand"><PharmacyMark light language={language} /><p>في صيدلية الشفاء، نؤمن أن الرعاية الصحية تبدأ من معلومة واضحة وقلب حاضر.</p><div className="social-links"><a href="#footer" aria-label="فيسبوك"><span aria-hidden="true">f</span></a><a href="#footer" aria-label="إنستغرام"><span aria-hidden="true">ig</span></a><a href="#footer" aria-label="يوتيوب"><span aria-hidden="true">▶</span></a></div></div>
           <div className="footer-column"><strong>روابط سريعة</strong><button type="button" onClick={() => goTo("conditions")}>الحالات الصحية</button><button type="button" onClick={() => goTo("beauty")}>العناية والجمال</button><button type="button" onClick={() => goTo("tips")}>الإرشادات الطبية</button><button type="button" onClick={() => router.push("/about")}>عن الصيدلية</button><button type="button" onClick={() => router.push("/contact")}>تواصل معنا</button></div>
-          <div className="footer-column"><strong>خدمات الشفاء</strong><button type="button" onClick={() => showToast("سيتم تفعيل رفع الوصفة قريبًا")}>رفع وصفة طبية</button><button type="button" onClick={() => showToast("سيتم تفعيل التوصيل قريبًا")}>توصيل إلى المنزل</button><button type="button" onClick={() => showToast("سيتم تفعيل الاستشارة قريبًا")}>استشارة صيدلي</button></div>
+          <div className="footer-column"><strong>خدمات الشفاء</strong><button type="button" onClick={() => router.push("/contact#contact-form")}>رفع وصفة طبية</button><button type="button" onClick={() => router.push("/contact")}>توصيل إلى المنزل</button><button type="button" onClick={() => router.push("/contact#contact-form")}>استشارة صيدلي</button></div>
           <div className="footer-contact"><strong>تواصل معنا</strong><span><PhoneCall size={16} /> ١٦٦٢٣</span><span><Mail size={16} /> hello@alshifa.example</span><span><MapPin size={16} /> القاهرة، مصر</span></div>
         </div>
         <div className="footer-bottom"><span>© ٢٠٢٦ صيدلية الشفاء. جميع الحقوق محفوظة.</span><span>هذه المعلومات للتوعية ولا تغني عن استشارة الطبيب.</span></div>
