@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type PointerEvent, type KeyboardEvent } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -51,6 +51,73 @@ function MarketingAvailability({ language }: { language: MarketingLanguage }) {
   );
 }
 
+
+const anatomyViews = [
+  { id: "front", file: "/generated/anatomy/human-anatomy-front.png", ar: "الأمامي", en: "Front" },
+  { id: "right", file: "/generated/anatomy/human-anatomy-right.png", ar: "الجانب الأيمن", en: "Right side" },
+  { id: "back", file: "/generated/anatomy/human-anatomy-back.png", ar: "الخلفي", en: "Back" },
+  { id: "left", file: "/generated/anatomy/human-anatomy-left.png", ar: "الجانب الأيسر", en: "Left side" },
+] as const;
+
+function AnatomyTurntable({ language }: { language: MarketingLanguage }) {
+  const [viewIndex, setViewIndex] = useState(0);
+  const dragStartX = useRef<number | null>(null);
+  const isArabic = language === "ar";
+  const view = anatomyViews[viewIndex];
+
+  const changeView = (step: number) => {
+    setViewIndex((current) => (current + step + anatomyViews.length) % anatomyViews.length);
+  };
+
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    dragStartX.current = event.clientX;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (dragStartX.current === null) return;
+    const distance = event.clientX - dragStartX.current;
+    if (Math.abs(distance) < 34) return;
+    changeView(distance < 0 ? 1 : -1);
+    dragStartX.current = event.clientX;
+  };
+
+  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    dragStartX.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowRight") changeView(isArabic ? -1 : 1);
+    if (event.key === "ArrowLeft") changeView(isArabic ? 1 : -1);
+  };
+
+  return (
+    <section className="anatomy-turntable-section" aria-labelledby="anatomy-turntable-title">
+      <div className="marketing-section-heading">
+        <span className="marketing-eyebrow"><Activity size={15} /> {isArabic ? "استكشاف تفاعلي" : "Interactive exploration"}</span>
+        <h2 id="anatomy-turntable-title">{isArabic ? "جسم الإنسان من كل زاوية." : "The human body, from every angle."}</h2>
+        <p>{isArabic ? "اسحب الصورة أو استخدم الأسهم للتنقل بين المنظر الأمامي والجانبي والخلفي." : "Drag the model or use the arrows to move through the front, side, and back views."}</p>
+      </div>
+      <div className="anatomy-turntable-card">
+        <div className="anatomy-turntable-viewer" role="application" aria-label={isArabic ? "عارض الجسم التشريحي" : "Anatomy model viewer"} tabIndex={0} onKeyDown={handleKeyDown} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp}>
+          <span className="anatomy-turntable-grid" aria-hidden="true" />
+          <span className="anatomy-turntable-orbit orbit-one" aria-hidden="true" />
+          <span className="anatomy-turntable-orbit orbit-two" aria-hidden="true" />
+          <span className="anatomy-turntable-badge">{isArabic ? "نموذج تشريحي ثلاثي الأبعاد" : "3D anatomy model"}</span>
+          <Image className="anatomy-turntable-image" src={view.file} alt={isArabic ? "المنظر " + view.ar : view.en + " view"} width={520} height={780} priority={viewIndex === 0} unoptimized draggable={false} />
+          <span className="anatomy-turntable-hint">{isArabic ? "اسحب للتدوير" : "Drag to rotate"}</span>
+        </div>
+        <div className="anatomy-turntable-controls">
+          <button type="button" onClick={() => changeView(isArabic ? 1 : -1)} aria-label={isArabic ? "المنظر السابق" : "Previous view"}><ArrowRight size={18} /></button>
+          <div className="anatomy-turntable-status" aria-live="polite"><strong>{isArabic ? view.ar : view.en}</strong><span>{String(viewIndex + 1).padStart(2, "0")} / 04</span></div>
+          <button type="button" onClick={() => changeView(isArabic ? -1 : 1)} aria-label={isArabic ? "المنظر التالي" : "Next view"}><ArrowLeft size={18} /></button>
+        </div>
+        <div className="anatomy-turntable-dots" aria-hidden="true">{anatomyViews.map((item, index) => <span className={index === viewIndex ? "active" : ""} key={item.id} />)}</div>
+      </div>
+    </section>
+  );
+}
 export function MarketingPage({ kind }: { kind: MarketingPageKind }) {
   const [language, setLanguage] = useState<MarketingLanguage>("ar");
   const [theme, setTheme] = useState<MarketingTheme>("dark");
@@ -133,7 +200,8 @@ export function MarketingPage({ kind }: { kind: MarketingPageKind }) {
             </section>
             <section className="marketing-stat-grid" aria-label={isArabic ? "أرقام الصيدلية" : "Pharmacy numbers"}><article><strong>18<span>+</span></strong><small>{isArabic ? "عامًا من الخبرة" : "years of care"}</small></article><article><strong>06</strong><small>{isArabic ? "فروع تخدمك" : "branches near you"}</small></article><article><strong>42</strong><small>{isArabic ? "صيدليًا متخصصًا" : "specialist pharmacists"}</small></article><article><strong>120K</strong><small>{isArabic ? "تجربة رعاية سنوية" : "annual care moments"}</small></article></section>
             <section className="marketing-story-section"><div className="marketing-section-heading"><span className="marketing-eyebrow">{isArabic ? "ما الذي يميز الشفاء؟" : "What makes Al-Shifa different?"}</span><h2>{isArabic ? "نصمم كل خطوة حول احتياجك." : "We design every step around you."}</h2><p>{isArabic ? "من أول سؤال إلى آخر متابعة، نستخدم التقنية لتبسيط التجربة لا لتعقيدها." : "From the first question to the next follow-up, we use technology to make care simpler, never more complicated."}</p></div><div className="marketing-values-grid"><article><span className="marketing-value-icon"><Image src="/generated/trust-guidance-3d.png" alt="" width={82} height={82} unoptimized /></span><h3>{isArabic ? "إرشاد مفهوم" : "Clear guidance"}</h3><p>{isArabic ? "نشرح الخيارات بلغة بسيطة ونضع السلامة قبل السرعة." : "We explain choices simply and put safety before speed."}</p></article><article><span className="marketing-value-icon"><Image src="/generated/trust-privacy-3d.png" alt="" width={82} height={82} unoptimized /></span><h3>{isArabic ? "خصوصية تحترمك" : "Privacy by design"}</h3><p>{isArabic ? "بياناتك الصحية تُعامل بعناية ووضوح في كل تفاعل." : "Your health details are handled with care and transparency."}</p></article><article><span className="marketing-value-icon"><Image src="/generated/trust-natural-3d.png" alt="" width={82} height={82} unoptimized /></span><h3>{isArabic ? "اختيار بوعي" : "Mindful choices"}</h3><p>{isArabic ? "نوازن بين الطبيعة والدليل العلمي قبل أي توصية." : "We balance natural options with evidence before every recommendation."}</p></article></div></section>
-            <section className="marketing-branches-section"><div className="marketing-section-heading compact"><span className="marketing-eyebrow"><Building2 size={15} /> {isArabic ? "شبكة الشفاء" : "The Al-Shifa network"}</span><h2>{isArabic ? "فرع قريب، وفريق يعرفك." : "A nearby branch, a team that knows you."}</h2></div><div className="marketing-branches-grid">{branches.map((branch) => <article className={`marketing-branch-card ${branch.tone}`} key={branch.name}><span className="branch-number"><MapPin size={18} /></span><div><h3>{branch.name}</h3><p>{branch.place}</p><Link href="/contact"><PhoneCall size={14} /> {branch.phone}</Link></div><span className="branch-open"><span />{isArabic ? "مفتوح الآن" : "Open now"}</span></article>)}</div></section>
+            <AnatomyTurntable language={language} />
+<section className="marketing-branches-section"><div className="marketing-section-heading compact"><span className="marketing-eyebrow"><Building2 size={15} /> {isArabic ? "شبكة الشفاء" : "The Al-Shifa network"}</span><h2>{isArabic ? "فرع قريب، وفريق يعرفك." : "A nearby branch, a team that knows you."}</h2></div><div className="marketing-branches-grid">{branches.map((branch) => <article className={`marketing-branch-card ${branch.tone}`} key={branch.name}><span className="branch-number"><MapPin size={18} /></span><div><h3>{branch.name}</h3><p>{branch.place}</p><Link href="/contact"><PhoneCall size={14} /> {branch.phone}</Link></div><span className="branch-open"><span />{isArabic ? "مفتوح الآن" : "Open now"}</span></article>)}</div></section>
           </>
         ) : (
           <>
