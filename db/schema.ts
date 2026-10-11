@@ -34,6 +34,16 @@ export const patientProfiles = sqliteTable(
   }),
 );
 
+export const medicineCatalog = sqliteTable("medicine_catalog", {
+  id: text("id").primaryKey(),
+  nameAr: text("name_ar").notNull(),
+  nameEn: text("name_en").notNull(),
+  aliases: text("aliases").notNull().default(""),
+  categoryAr: text("category_ar").notNull().default(""),
+  categoryEn: text("category_en").notNull().default(""),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+});
+
 export const patientAttachments = sqliteTable("patient_attachments", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   userId: text("user_id").notNull(),

@@ -2527,4 +2527,9 @@ html {
 .portal-mini-check:has(input:checked) { border-color: rgba(117, 226, 201, .7); color: #a9efe0; background: rgba(88, 219, 190, .16); }
 .portal-mini-check input { accent-color: #49c9ae; }
 
-@media (max-width: 620px) { .prescription-upload-actions { align-items: stretch; } .prescription-upload-trigger, .prescription-clear-button { flex: 1; justify-content: center; } .prescription-upload-panel { padding: 14px; } }
+@media (max-width: 620px) { .prescription-upload-actions { align-items: stretch; } .prescription-upload-trigger, .prescription-clear-button { flex: 1; justify-content: center; } .prescription-upload-panel { padding: 14px; } }.prescription-ocr-text-field { display: grid; gap: 6px; }
+.prescription-ocr-text-field > span { color: rgba(239, 255, 251, .62); font-size: 9px; font-weight: 900; }
+.prescription-ocr-text-field textarea { width: 100%; resize: vertical; padding: 9px 10px; border: 1px solid rgba(165, 234, 219, .18); border-radius: 10px; outline: 0; color: #effff9; background: rgba(2, 27, 31, .5); font: inherit; font-size: 10px; line-height: 1.7; }
+.prescription-ocr-text-field textarea:focus { border-color: #75e2c9; box-shadow: 0 0 0 3px rgba(117, 226, 201, .08); }
+.prescription-recheck-button { width: fit-content; padding: 8px 10px; border: 1px solid rgba(117, 226, 201, .32); border-radius: 9px; color: #b9fae9; background: rgba(88, 219, 190, .09); font-size: 9px; font-weight: 900; cursor: pointer; }
+.prescription-recheck-button:hover { border-color: #75e2c9; background: rgba(88, 219, 190, .17); }
