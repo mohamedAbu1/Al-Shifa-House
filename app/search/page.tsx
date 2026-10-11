@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent, type PointerEvent } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -255,6 +255,46 @@ function normalize(value: string) {
   return value.toLocaleLowerCase("ar").normalize("NFKD").replace(/[\u064B-\u065F\u0670]/g, "").trim();
 }
 
+type PrescriptionScanItem = { name: string; confidence: number; matchedId?: string; matchedName?: string };
+type PrescriptionScanResult = { status: string; provider: string; medicines: PrescriptionScanItem[]; notice: string };
+
+function readCompressedImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("تعذر قراءة الصورة."));
+    reader.onload = () => {
+      if (typeof reader.result !== "string") { reject(new Error("تعذر قراءة الصورة.")); return; }
+      const source = reader.result;
+      const image = new window.Image();
+      image.onerror = () => reject(new Error("صيغة الصورة غير مدعومة."));
+      image.onload = () => {
+        const maxDimension = 1400;
+        const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        const context = canvas.getContext("2d");
+        if (!context) { resolve(source); return; }
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const encode = (quality: number) => canvas.toBlob((blob) => {
+          if (!blob) { resolve(source); return; }
+          const encoded = new FileReader();
+          encoded.onerror = () => reject(new Error("تعذر تجهيز الصورة."));
+          encoded.onload = () => {
+            if (typeof encoded.result !== "string") { reject(new Error("تعذر تجهيز الصورة.")); return; }
+            if (encoded.result.length > 438000 && quality > 0.42) { encode(quality - 0.1); return; }
+            resolve(encoded.result);
+          };
+          encoded.readAsDataURL(blob);
+        }, "image/jpeg", quality);
+        encode(0.78);
+      };
+      image.src = source;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
 function FormIcon({ type }: { type: FormType }) {
   if (type === "injection") return <Syringe size={17} />;
   if (type === "suppository") return <Package size={17} />;
@@ -315,6 +355,10 @@ export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(medicines[0].id);
   const [formId, setFormId] = useState<FormType>(medicines[0].forms[0].id);
+  const [prescriptionImage, setPrescriptionImage] = useState<{ dataUrl: string; fileName: string } | null>(null);
+  const [scanState, setScanState] = useState<"idle" | "scanning" | "done" | "error">("idle");
+  const [scanError, setScanError] = useState("");
+  const [scanResult, setScanResult] = useState<PrescriptionScanResult | null>(null);
   const isArabic = language === "ar";
   const selectedMedicine = medicines.find((medicine) => medicine.id === selectedId) ?? medicines[0];
   const matches = useMemo(() => {
@@ -365,6 +409,40 @@ export default function SearchPage() {
     setQuery(medicine.ar);
     setFormId(medicine.forms[0].id);
   };
+  const analyzePrescription = async (dataUrl: string, fileName: string) => {
+    setScanState("scanning");
+    setScanError("");
+    try {
+      const response = await fetch("/api/prescription-scan", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ dataUrl, fileName, hint: query }) });
+      const payload = await response.json() as PrescriptionScanResult & { error?: string };
+      if (!response.ok) throw new Error(payload.error || "تعذر تحليل الصورة.");
+      setScanResult(payload);
+      setScanState("done");
+      const matched = payload.medicines.find((item) => item.matchedId);
+      const medicine = matched?.matchedId ? medicines.find((item) => item.id === matched.matchedId) : undefined;
+      if (medicine) chooseMedicine(medicine);
+    } catch (error) {
+      setScanState("error");
+      setScanError(error instanceof Error ? error.message : "تعذر تحليل الصورة الآن.");
+    }
+  };
+  const handlePrescriptionFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { setScanState("error"); setScanError("اختر صورة JPG أو PNG أو WebP."); return; }
+    try {
+      const dataUrl = await readCompressedImage(file);
+      if (dataUrl.length > 440000) throw new Error("الصورة ما زالت كبيرة. اختر صورة أوضح وأقل حجمًا.");
+      const preparedName = file.name.replace(/\.[^.]+$/, "") + ".jpg";
+      setPrescriptionImage({ dataUrl, fileName: preparedName });
+      await analyzePrescription(dataUrl, preparedName);
+    } catch (error) {
+      setScanState("error");
+      setScanError(error instanceof Error ? error.message : "تعذر تجهيز الصورة.");
+    }
+  };
+  const clearPrescription = () => { setPrescriptionImage(null); setScanResult(null); setScanError(""); setScanState("idle"); };
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (matches[0]) chooseMedicine(matches[0]);
@@ -386,6 +464,13 @@ export default function SearchPage() {
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={isArabic ? "مثال: بانادول أو Panadol أو باراسيتامول" : "Example: Panadol, Brufen, or paracetamol"} aria-label={isArabic ? "اسم العلاج" : "Medicine name"} autoComplete="off" />
             <button type="submit">{isArabic ? "بحث" : "Search"} <ArrowLeft size={17} /></button>
           </form>
+          <section className="prescription-upload-panel" aria-label={isArabic ? "رفع وتحليل الروشتة" : "Prescription upload and review"}>
+            <div className="prescription-upload-heading"><span className="search-card-kicker"><Package size={15} /> {isArabic ? "مراجعة الروشتة" : "Prescription review"}</span><strong>{isArabic ? "ارفع صورة الروشتة بسهولة" : "Upload a prescription image"}</strong><p>{isArabic ? "سنجهز الصورة للمراجعة، ولن نخمن علاجًا من صورة غير واضحة." : "We prepare the image for review and never guess a medicine from an unclear image."}</p></div>
+            <div className="prescription-upload-actions"><label className="prescription-upload-trigger"><Package size={17} /> {isArabic ? "اختيار صورة الروشتة" : "Choose prescription image"}<input type="file" accept="image/png,image/jpeg,image/webp" onChange={handlePrescriptionFile} /></label>{prescriptionImage && <button className="prescription-clear-button" type="button" onClick={clearPrescription}>{isArabic ? "إزالة" : "Remove"}</button>}</div>
+            {prescriptionImage && <div className="prescription-preview"><img src={prescriptionImage.dataUrl} alt={isArabic ? "معاينة صورة الروشتة" : "Prescription preview"} /><div><strong>{prescriptionImage.fileName}</strong><span>{scanState === "scanning" ? (isArabic ? "جاري تجهيز المراجعة..." : "Preparing review...") : (isArabic ? "الصورة جاهزة للمراجعة" : "Image ready for review")}</span></div></div>}
+            {scanState === "error" && <div className="prescription-scan-message error"><AlertTriangle size={15} /> {scanError}</div>}
+            {scanResult && <div className="prescription-scan-result"><div><strong>{isArabic ? "نتيجة آمنة للمراجعة" : "Safe review result"}</strong><p>{scanResult.notice}</p></div>{scanResult.medicines.length > 0 && <div className="prescription-candidate-list">{scanResult.medicines.map((item) => <button type="button" key={item.matchedId || item.name} onClick={() => { const medicine = item.matchedId ? medicines.find((entry) => entry.id === item.matchedId) : undefined; if (medicine) chooseMedicine(medicine); }}>{item.matchedName || item.name}<small>{Math.round(item.confidence * 100)}% · {isArabic ? "اختيار للمراجعة" : "Review candidate"}</small></button>)}</div>}<Link href="/profile#medical-files" className="prescription-save-link">{isArabic ? "حفظ الصورة في ملفي الصحي" : "Save image to my health profile"} <ArrowLeft size={14} /></Link></div>}
+          </section>
           <div className="search-suggestion-panel" aria-live="polite"><span><Info size={15} /> {isArabic ? "مساعدة في الكتابة" : "Typing help"}</span><p>{isArabic ? "جرّب الاسم التجاري أو المادة الفعالة بالعربية والإنجليزية:" : "Try a brand name or active ingredient in Arabic or English:"}</p><div>{matches.length ? matches.map((medicine) => <button key={medicine.id} type="button" onClick={() => chooseMedicine(medicine)}>{medicine.ar} <small>{medicine.en}</small></button>) : <span className="search-no-suggestions">{isArabic ? "لم نجد علاجًا مطابقًا. جرّب اسمًا تجاريًا أو مادة فعالة مختلفة." : "No matching medicine yet. Try another brand or active ingredient."}</span>}</div></div>
         </div>
         <div className="search-hero-orb"><span className="search-orb-ring ring-one" /><span className="search-orb-ring ring-two" /><Image src="/generated/health-profile-card.png" alt="" width={280} height={280} unoptimized /></div>

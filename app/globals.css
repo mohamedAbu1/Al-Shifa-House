@@ -2493,3 +2493,38 @@ html {
 @keyframes portal-spin { to { transform: rotate(360deg); } }
 @media (max-width: 980px) { .portal-topbar { width: min(100% - 32px, 720px); } .portal-nav { display: none; } .portal-hero, .portal-content-grid, .portal-loading, .portal-error-state, .portal-footer { width: min(100% - 32px, 720px); } .profile-portal-grid, .chat-portal-grid, .schedule-portal-grid { grid-template-columns: 1fr; } .portal-summary-card, .portal-context-card { position: static; } .portal-upload-grid { grid-template-columns: 1fr; } .portal-hero-avatar { width: 170px; height: 170px; } .portal-hero-avatar img, .portal-hero-avatar > span { width: 170px; height: 170px; } }
 @media (max-width: 620px) { .portal-topbar { min-height: 68px; } .portal-brand strong { font-size: 13px; } .portal-brand small { display: none; } .portal-signout { width: 34px; height: 34px; padding: 0; justify-content: center; font-size: 0; } .portal-hero { min-height: 235px; align-items: end; } .portal-hero h1 { font-size: 36px; } .portal-hero p { font-size: 11px; } .portal-hero-avatar { width: 135px; height: 155px; margin-inline-end: -18px; } .portal-hero-avatar img, .portal-hero-avatar > span { width: 145px; height: 145px; } .portal-form-grid { grid-template-columns: 1fr; } .portal-form-grid label.wide, .portal-form-grid .wide { grid-column: auto; } .portal-editor-card, .portal-section-card, .portal-chat-card { padding: 17px; } .portal-card-heading { display: block; } .portal-edit-badge, .portal-count-badge, .portal-live-dot, .portal-chat-status { margin-top: 10px; } .portal-guest-card { width: min(100% - 32px, 500px); grid-template-columns: 1fr; text-align: center; } .portal-guest-card > span { margin: 0 auto; } .portal-guest-card .portal-primary { width: 100%; } .portal-upload-grid { grid-template-columns: 1fr; } .portal-schedule-item { grid-template-columns: 1fr; } .portal-schedule-times { justify-content: flex-start; } }
+
+/* Prescription review flow */
+.prescription-upload-panel { max-width: 670px; margin-top: 13px; padding: 16px 17px; border: 1px solid rgba(165, 234, 219, .18); border-radius: 18px; background: linear-gradient(145deg, rgba(17, 69, 67, .72), rgba(7, 38, 42, .84)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05); }
+.prescription-upload-heading { display: grid; gap: 5px; }
+.prescription-upload-heading strong { color: #effff9; font-size: 14px; }
+.prescription-upload-heading p { margin: 0; color: rgba(239, 255, 251, .58); font-size: 10px; line-height: 1.7; }
+.prescription-upload-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.prescription-upload-trigger, .prescription-clear-button { display: inline-flex; min-height: 38px; align-items: center; gap: 7px; padding: 0 12px; border: 1px solid rgba(117, 226, 201, .36); border-radius: 11px; color: #dffff6; background: rgba(88, 219, 190, .1); font-size: 10px; font-weight: 900; cursor: pointer; }
+.prescription-upload-trigger:hover, .prescription-clear-button:hover { border-color: #75e2c9; background: rgba(88, 219, 190, .18); }
+.prescription-upload-trigger input { display: none; }
+.prescription-clear-button { border-color: rgba(255, 188, 161, .3); color: #ffd8c8; background: rgba(222, 112, 83, .1); }
+.prescription-preview { display: flex; min-width: 0; align-items: center; gap: 10px; margin-top: 11px; padding: 8px; border: 1px solid rgba(165, 234, 219, .12); border-radius: 12px; background: rgba(2, 27, 31, .35); }
+.prescription-preview img { width: 48px; height: 48px; flex: 0 0 auto; border-radius: 9px; object-fit: cover; }
+.prescription-preview div { display: grid; min-width: 0; gap: 3px; }
+.prescription-preview strong { overflow: hidden; color: #effff9; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.prescription-preview span { color: rgba(239, 255, 251, .52); font-size: 9px; }
+.prescription-scan-message { display: flex; align-items: center; gap: 6px; margin-top: 9px; color: #ffd2b9; font-size: 10px; }
+.prescription-scan-result { display: grid; gap: 10px; margin-top: 11px; padding: 11px; border: 1px solid rgba(117, 226, 201, .2); border-radius: 13px; background: rgba(6, 38, 42, .62); }
+.prescription-scan-result strong { color: #a9efe0; font-size: 11px; }
+.prescription-scan-result p { margin: 4px 0 0; color: rgba(239, 255, 251, .6); font-size: 10px; line-height: 1.7; }
+.prescription-candidate-list { display: flex; flex-wrap: wrap; gap: 7px; }
+.prescription-candidate-list button { display: grid; gap: 2px; padding: 8px 10px; border: 1px solid rgba(165, 234, 219, .17); border-radius: 10px; color: #effff9; background: rgba(88, 219, 190, .07); font-size: 10px; font-weight: 900; text-align: start; cursor: pointer; }
+.prescription-candidate-list button:hover { border-color: #75e2c9; background: rgba(88, 219, 190, .15); }
+.prescription-candidate-list small { color: rgba(239, 255, 251, .48); font-size: 8px; font-weight: 700; }
+.prescription-save-link { display: inline-flex; width: fit-content; align-items: center; gap: 5px; color: #72dfc4; font-size: 10px; font-weight: 900; text-decoration: none; }
+.prescription-save-link:hover { color: #dffff6; }
+
+.portal-condition-field { min-width: 0; margin: 0; padding: 10px 12px 12px; border: 1px solid rgba(165, 234, 219, .13); border-radius: 13px; }
+.portal-condition-field legend { padding: 0 5px; color: rgba(234, 255, 249, .64); font-size: 10px; font-weight: 900; }
+.portal-condition-field > div { display: flex; flex-wrap: wrap; gap: 7px; }
+.portal-mini-check { display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; border: 1px solid rgba(165, 234, 219, .14); border-radius: 9px; color: #dffff6; background: rgba(88, 219, 190, .06); font-size: 9px; cursor: pointer; }
+.portal-mini-check:has(input:checked) { border-color: rgba(117, 226, 201, .7); color: #a9efe0; background: rgba(88, 219, 190, .16); }
+.portal-mini-check input { accent-color: #49c9ae; }
+
+@media (max-width: 620px) { .prescription-upload-actions { align-items: stretch; } .prescription-upload-trigger, .prescription-clear-button { flex: 1; justify-content: center; } .prescription-upload-panel { padding: 14px; } }
