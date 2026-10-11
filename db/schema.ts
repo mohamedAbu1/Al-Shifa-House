@@ -33,3 +33,34 @@ export const patientProfiles = sqliteTable(
     userIdUnique: uniqueIndex("patient_profiles_user_id_unique").on(table.userId),
   }),
 );
+
+export const patientAttachments = sqliteTable("patient_attachments", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: text("user_id").notNull(),
+  category: text("category").notNull(),
+  fileName: text("file_name").notNull(),
+  mimeType: text("mime_type").notNull(),
+  dataUrl: text("data_url").notNull(),
+  createdAt: text("created_at").notNull().default(sql.raw("CURRENT_TIMESTAMP")),
+});
+
+export const patientSchedules = sqliteTable("patient_schedules", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: text("user_id").notNull(),
+  medicineName: text("medicine_name").notNull(),
+  dose: text("dose").notNull().default(""),
+  frequency: text("frequency").notNull(),
+  times: text("times").notNull(),
+  whatsappEnabled: integer("whatsapp_enabled", { mode: "boolean" }).notNull().default(false),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+  createdAt: text("created_at").notNull().default(sql.raw("CURRENT_TIMESTAMP")),
+  updatedAt: text("updated_at").notNull().default(sql.raw("CURRENT_TIMESTAMP")),
+});
+
+export const patientChatMessages = sqliteTable("patient_chat_messages", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: text("user_id").notNull(),
+  sender: text("sender").notNull(),
+  message: text("message").notNull(),
+  createdAt: text("created_at").notNull().default(sql.raw("CURRENT_TIMESTAMP")),
+});

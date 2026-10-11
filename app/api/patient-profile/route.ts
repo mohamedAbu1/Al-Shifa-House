@@ -49,6 +49,7 @@ function optionalInteger(value: unknown): number | null {
 
 function toClientProfile(profile: typeof patientProfiles.$inferSelect) {
   return {
+    patientNumber: profile.id,
     fullName: profile.fullName,
     age: String(profile.age),
     gender: profile.gender,

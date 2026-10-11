@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type PointerEvent } from "react";
 import {
   Activity,
   AlertTriangle,
   ArrowLeft,
-  ArrowRight,
   ChevronLeft,
   ChevronRight,
   CircleCheck,
@@ -303,9 +303,9 @@ function SearchHeader({ language, setLanguage }: { language: Language; setLangua
   const isArabic = language === "ar";
   return (
     <header className="search-topbar">
-      <a href="/" className="search-brand"><span><Image src="/generated/pharmacy-emblem.png" alt="" width={48} height={48} unoptimized /></span><strong>{isArabic ? "صيدلية الشفاء" : "Al-Shifa Pharmacy"}<small>{isArabic ? "رعاية أقرب إليك" : "Care, closer to you"}</small></strong></a>
-      <nav className="search-nav" aria-label={isArabic ? "التنقل" : "Navigation"}><a href="/"><Home size={16} /> {isArabic ? "الرئيسية" : "Home"}</a><a href="/about">{isArabic ? "من نحن" : "About"}</a><a href="/contact">{isArabic ? "تواصل معنا" : "Contact"}</a></nav>
-      <div className="search-top-actions"><a className="search-language-toggle" href={isArabic ? "/search?lang=en" : "/search?lang=ar"} onClick={(event) => { event.preventDefault(); const next = isArabic ? "en" : "ar"; setLanguage(next); try { window.localStorage.setItem("al-shifa-language", next); } catch {} }} aria-label={isArabic ? "التبديل إلى الإنجليزية" : "Switch to Arabic"}><span>文</span>{isArabic ? "English" : "العربية"}</a><a href="/">{isArabic ? "العودة" : "Back"}</a></div>
+      <Link href="/" className="search-brand"><span><Image src="/generated/pharmacy-emblem.png" alt="" width={48} height={48} unoptimized /></span><strong>{isArabic ? "صيدلية الشفاء" : "Al-Shifa Pharmacy"}<small>{isArabic ? "رعاية أقرب إليك" : "Care, closer to you"}</small></strong></Link>
+      <nav className="search-nav" aria-label={isArabic ? "التنقل" : "Navigation"}><Link href="/"><Home size={16} /> {isArabic ? "الرئيسية" : "Home"}</Link><Link href="/about">{isArabic ? "من نحن" : "About"}</Link><Link href="/contact">{isArabic ? "تواصل معنا" : "Contact"}</Link></nav>
+      <div className="search-top-actions"><Link className="search-language-toggle" href={isArabic ? "/search?lang=en" : "/search?lang=ar"} onClick={(event) => { event.preventDefault(); const next = isArabic ? "en" : "ar"; setLanguage(next); try { window.localStorage.setItem("al-shifa-language", next); } catch {} }} aria-label={isArabic ? "التبديل إلى الإنجليزية" : "Switch to Arabic"}><span>文</span>{isArabic ? "English" : "العربية"}</Link><Link href="/">{isArabic ? "العودة" : "Back"}</Link></div>
     </header>
   );
 }
@@ -327,6 +327,8 @@ export default function SearchPage() {
   useEffect(() => {
     const requestedLanguage = new URLSearchParams(window.location.search).get("lang");
     if (requestedLanguage === "en" || requestedLanguage === "ar") {
+      // URL language is an external browser preference; the state update is intentional.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLanguage(requestedLanguage);
       try { window.localStorage.setItem("al-shifa-language", requestedLanguage); } catch {}
       return;
@@ -340,6 +342,8 @@ export default function SearchPage() {
   useEffect(() => {
     const initialQuery = new URLSearchParams(window.location.search).get("q")?.trim();
     if (!initialQuery) return;
+    // Initialize the search state from the deep-link query once.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setQuery(initialQuery);
     const needle = normalize(initialQuery);
     const match = medicines.find((medicine) => [medicine.ar, medicine.en, ...medicine.aliases, medicine.bodySystemAr, medicine.bodySystemEn].some((term) => normalize(term).includes(needle)));
@@ -350,7 +354,10 @@ export default function SearchPage() {
   }, []);
 
   useEffect(() => {
-    if (!selectedMedicine.forms.some((form) => form.id === formId)) setFormId(selectedMedicine.forms[0].id);
+    if (!selectedMedicine.forms.some((form) => form.id === formId)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormId(selectedMedicine.forms[0].id);
+    }
   }, [selectedMedicine, formId]);
 
   const chooseMedicine = (medicine: Medicine) => {
