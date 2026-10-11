@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FormEvent, type KeyboardEvent, type PointerEvent } from "react";
 import {
   Activity,
@@ -304,9 +303,9 @@ function SearchHeader({ language, setLanguage }: { language: Language; setLangua
   const isArabic = language === "ar";
   return (
     <header className="search-topbar">
-      <Link href="/" className="search-brand"><span><Image src="/generated/pharmacy-emblem.png" alt="" width={48} height={48} unoptimized /></span><strong>{isArabic ? "صيدلية الشفاء" : "Al-Shifa Pharmacy"}<small>{isArabic ? "رعاية أقرب إليك" : "Care, closer to you"}</small></strong></Link>
-      <nav className="search-nav" aria-label={isArabic ? "التنقل" : "Navigation"}><Link href="/"><Home size={16} /> {isArabic ? "الرئيسية" : "Home"}</Link><Link href="/about">{isArabic ? "من نحن" : "About"}</Link><Link href="/contact">{isArabic ? "تواصل معنا" : "Contact"}</Link></nav>
-      <div className="search-top-actions"><button type="button" onClick={() => setLanguage(isArabic ? "en" : "ar")}><span>文</span>{isArabic ? "English" : "العربية"}</button><Link href="/">{isArabic ? "العودة" : "Back"}</Link></div>
+      <a href="/" className="search-brand"><span><Image src="/generated/pharmacy-emblem.png" alt="" width={48} height={48} unoptimized /></span><strong>{isArabic ? "صيدلية الشفاء" : "Al-Shifa Pharmacy"}<small>{isArabic ? "رعاية أقرب إليك" : "Care, closer to you"}</small></strong></a>
+      <nav className="search-nav" aria-label={isArabic ? "التنقل" : "Navigation"}><a href="/"><Home size={16} /> {isArabic ? "الرئيسية" : "Home"}</a><a href="/about">{isArabic ? "من نحن" : "About"}</a><a href="/contact">{isArabic ? "تواصل معنا" : "Contact"}</a></nav>
+      <div className="search-top-actions"><a className="search-language-toggle" href={isArabic ? "/search?lang=en" : "/search?lang=ar"} onClick={(event) => { event.preventDefault(); const next = isArabic ? "en" : "ar"; setLanguage(next); try { window.localStorage.setItem("al-shifa-language", next); } catch {} }} aria-label={isArabic ? "التبديل إلى الإنجليزية" : "Switch to Arabic"}><span>文</span>{isArabic ? "English" : "العربية"}</a><a href="/">{isArabic ? "العودة" : "Back"}</a></div>
     </header>
   );
 }
@@ -326,6 +325,12 @@ export default function SearchPage() {
   const noResults = query.trim().length > 0 && matches.length === 0;
 
   useEffect(() => {
+    const requestedLanguage = new URLSearchParams(window.location.search).get("lang");
+    if (requestedLanguage === "en" || requestedLanguage === "ar") {
+      setLanguage(requestedLanguage);
+      try { window.localStorage.setItem("al-shifa-language", requestedLanguage); } catch {}
+      return;
+    }
     try {
       const stored = window.localStorage.getItem("al-shifa-language");
       if (stored === "en") setLanguage("en");
