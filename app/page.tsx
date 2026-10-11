@@ -686,7 +686,7 @@ function App() {
             <div className="header-utility-row">
               <button className="header-theme-toggle" type="button" onClick={toggleTheme} aria-label={theme === "light" ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"} title={theme === "light" ? "Dark mode" : "Light mode"}>{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}</button>
               <button className={languageSwitching ? "language-toggle is-switching" : "language-toggle"} type="button" onClick={toggleLanguage} aria-label={language === "ar" ? "Switch to English" : "التبديل إلى العربية"} title={language === "ar" ? "English" : "العربية"}><Languages size={16} /><span>{language === "ar" ? "EN" : "عربي"}</span></button>
-              <button className="header-search" type="button" aria-label={language === "ar" ? "البحث" : "Search"} onClick={() => showToast("سيتم تفعيل البحث قريبًا")}><Search size={19} /></button>
+              <button className="header-search" type="button" aria-label={language === "ar" ? "البحث" : "Search"} onClick={() => router.push("/search")}><Search size={19} /></button>
             </div>
             <button className="header-login" type="button" onClick={() => { setMobileMenu(false); setAuthVisible(true); window.scrollTo({ top: 0, behavior: "smooth" }); }}><UserRound size={17} /><span>تسجيل الدخول</span></button>
           </div>
