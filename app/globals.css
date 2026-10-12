@@ -2543,4 +2543,5 @@ html {
 .prescription-availability-item.missing > span { color: #ffd2b9; background: rgba(222, 112, 83, .12); }
 .prescription-availability-item button { grid-column: 1 / -1; width: fit-content; padding: 5px 8px; border: 1px solid rgba(117, 226, 201, .26); border-radius: 7px; color: #a9efe0; background: transparent; font-size: 8px; font-weight: 900; cursor: pointer; }
 .prescription-availability-item button:hover { border-color: #75e2c9; background: rgba(88, 219, 190, .12); }
+.prescription-no-confirmed-result { display: flex; align-items: flex-start; gap: 7px; padding: 10px; border: 1px solid rgba(255, 188, 161, .22); border-radius: 10px; color: #ffd2b9; background: rgba(222, 112, 83, .08); font-size: 9px; line-height: 1.7; }
 @media (max-width: 520px) { .prescription-availability-item { grid-template-columns: 1fr; } .prescription-availability-item > span { width: fit-content; } }

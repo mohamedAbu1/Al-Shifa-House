@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 type CatalogMedicine = { id: string; ar: string; en: string; aliases: string[]; categoryAr: string; categoryEn: string; active?: boolean };
 type MedicineMatch = CatalogMedicine & { confidence: number; extractedName?: string; availability: "available" };
-type MedicineCheck = { extractedName: string; availability: "available" | "not-found"; confidence: number; matchedId?: string; matchedName?: string };
+type MedicineCheck = { extractedName: string; availability: "available"; confidence: number; matchedId: string; matchedName: string };
 
 const fallbackCatalog: CatalogMedicine[] = [
   { id: "panadol-500", ar: "بانادول 500 مجم", en: "Panadol 500 mg", aliases: ["باراسيتامول", "paracetamol", "acetaminophen", "panadol", "الألم والحرارة", "العناية بالأطفال"], categoryAr: "مسكن وخافض للحرارة", categoryEn: "Pain reliever & fever reducer" },
@@ -92,21 +92,22 @@ function extractEnglishLines(query: string) {
     .slice(0, 30);
 }
 
-function identifyPrescriptionMedicines(catalog: CatalogMedicine[], query: string): MedicineCheck[] {
+function identifyPrescriptionMedicines(catalog: CatalogMedicine[], query: string) {
   const lines = extractEnglishLines(query);
-  if (!lines.length) return [];
+  if (!lines.length) return { checks: [] as MedicineCheck[], ignoredCount: 0 };
   const checks: MedicineCheck[] = [];
+  let ignoredCount = 0;
   for (const extractedName of lines) {
     const match = findMatches(catalog, extractedName)[0];
     if (match && match.confidence >= 0.58) {
       if (!checks.some((check) => check.matchedId === match.id)) {
         checks.push({ extractedName, availability: "available", confidence: match.confidence, matchedId: match.id, matchedName: match.en });
       }
-    } else if (!checks.some((check) => check.extractedName === extractedName)) {
-      checks.push({ extractedName, availability: "not-found", confidence: 0 });
+    } else {
+      ignoredCount += 1;
     }
   }
-  return checks;
+  return { checks, ignoredCount };
 }
 
 export async function GET(request: Request) {
@@ -115,8 +116,10 @@ export async function GET(request: Request) {
     const db = getDb();
     const rows = await db.select().from(medicineCatalog).where(eq(medicineCatalog.active, true)).orderBy(desc(medicineCatalog.nameEn));
     const catalog = rows.map(rowToMedicine);
-    return Response.json({ source: "database", language: "en", query, medicines: findMatches(catalog, query), checks: identifyPrescriptionMedicines(catalog, query) });
+    const prescription = identifyPrescriptionMedicines(catalog, query);
+    return Response.json({ source: "database", language: "en", query, medicines: findMatches(catalog, query), checks: prescription.checks, ignoredCount: prescription.ignoredCount });
   } catch {
-    return Response.json({ source: "fallback-catalog", language: "en", query, medicines: findMatches(fallbackCatalog, query), checks: identifyPrescriptionMedicines(fallbackCatalog, query) });
+    const prescription = identifyPrescriptionMedicines(fallbackCatalog, query);
+    return Response.json({ source: "fallback-catalog", language: "en", query, medicines: findMatches(fallbackCatalog, query), checks: prescription.checks, ignoredCount: prescription.ignoredCount });
   }
 }
