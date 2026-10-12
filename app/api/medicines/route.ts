@@ -5,6 +5,8 @@ import { medicineCatalog } from "@/db/schema";
 export const dynamic = "force-dynamic";
 
 type CatalogMedicine = { id: string; ar: string; en: string; aliases: string[]; categoryAr: string; categoryEn: string; active?: boolean };
+type MedicineMatch = CatalogMedicine & { confidence: number; extractedName?: string; availability: "available" };
+type MedicineCheck = { extractedName: string; availability: "available" | "not-found"; confidence: number; matchedId?: string; matchedName?: string };
 
 const fallbackCatalog: CatalogMedicine[] = [
   { id: "panadol-500", ar: "بانادول 500 مجم", en: "Panadol 500 mg", aliases: ["باراسيتامول", "paracetamol", "acetaminophen", "panadol", "الألم والحرارة", "العناية بالأطفال"], categoryAr: "مسكن وخافض للحرارة", categoryEn: "Pain reliever & fever reducer" },
@@ -18,33 +20,93 @@ const fallbackCatalog: CatalogMedicine[] = [
   { id: "bepanthen-ointment", ar: "بيبانثين مرهم", en: "Bepanthen Ointment", aliases: ["ديكسبانثينول", "dexpanthenol", "bepanthen", "جلد"], categoryAr: "العناية بالجلد", categoryEn: "Skin care" },
 ];
 
-function normalize(value: string) {
-  return value.toLocaleLowerCase("ar").normalize("NFKD").replace(/[\u064B-\u065F\u0670]/g, "").trim();
+function normalizeEnglish(value: string) {
+  return value.toLocaleLowerCase("en").normalize("NFKD").replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
 function rowToMedicine(row: typeof medicineCatalog.$inferSelect): CatalogMedicine {
   return { id: row.id, ar: row.nameAr, en: row.nameEn, aliases: row.aliases.split("|").filter(Boolean), categoryAr: row.categoryAr, categoryEn: row.categoryEn, active: row.active };
 }
 
+function englishTerms(medicine: CatalogMedicine) {
+  return [medicine.en, ...medicine.aliases].map(normalizeEnglish).filter((term) => /[a-z]/.test(term) && term.length >= 3);
+}
+
+function editDistance(left: string, right: string) {
+  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  for (let row = 1; row <= left.length; row += 1) {
+    let diagonal = previous[0];
+    previous[0] = row;
+    for (let column = 1; column <= right.length; column += 1) {
+      const above = previous[column];
+      const cost = left[row - 1] === right[column - 1] ? 0 : 1;
+      previous[column] = Math.min(previous[column] + 1, previous[column - 1] + 1, diagonal + cost);
+      diagonal = above;
+    }
+  }
+  return previous[right.length];
+}
+
 function scoreMedicine(medicine: CatalogMedicine, query: string) {
-  const needle = normalize(query);
+  const needle = normalizeEnglish(query);
   if (!needle) return 0;
-  const terms = [medicine.ar, medicine.en, ...medicine.aliases].map(normalize).filter((term) => term.length >= 3);
+  const terms = englishTerms(medicine);
   const exact = terms.some((term) => needle === term);
   const included = terms.filter((term) => needle.includes(term) || term.includes(needle));
   if (exact) return 0.98;
   if (included.length > 0) return Math.min(0.94, 0.76 + included.length * 0.04);
+  const queryTokens = needle.split(" ").filter((token) => token.length >= 3);
+  const bestFuzzy = terms.reduce((best, term) => {
+    const termTokens = term.split(" ").filter((token) => token.length >= 3);
+    if (!termTokens.length || !queryTokens.length) return best;
+    const tokenScore = termTokens.reduce((total, token) => {
+      const closest = Math.max(...queryTokens.map((queryToken) => {
+        const longest = Math.max(token.length, queryToken.length);
+        return longest ? 1 - editDistance(token, queryToken) / longest : 0;
+      }));
+      return total + closest;
+    }, 0) / termTokens.length;
+    return Math.max(best, tokenScore);
+  }, 0);
+  if (bestFuzzy >= 0.72) return Math.min(0.86, 0.58 + bestFuzzy * 0.32);
   return 0;
 }
 
-function findMatches(catalog: CatalogMedicine[], query: string) {
-  if (!query) return catalog.slice(0, 12).map((medicine) => ({ ...medicine, confidence: 0 }));
+function findMatches(catalog: CatalogMedicine[], query: string): MedicineMatch[] {
+  if (!query) return catalog.slice(0, 12).map((medicine) => ({ ...medicine, confidence: 0, availability: "available" as const }));
   return catalog
     .map((medicine) => ({ medicine, confidence: scoreMedicine(medicine, query) }))
     .filter((item) => item.confidence > 0)
     .sort((a, b) => b.confidence - a.confidence)
     .slice(0, 12)
-    .map(({ medicine, confidence }) => ({ ...medicine, confidence }));
+    .map(({ medicine, confidence }) => ({ ...medicine, confidence, availability: "available" as const }));
+}
+
+const prescriptionNoise = new Set(["tablet", "tablets", "capsule", "capsules", "syrup", "cream", "ointment", "inhaler", "solution", "mg", "ml", "take", "daily", "twice", "once", "after", "before", "morning", "evening", "night", "days", "day", "use", "prescription", "patient", "name", "doctor", "dose", "for", "the", "and", "with"]);
+
+function extractEnglishLines(query: string) {
+  return query
+    .split(/[\r\n|;,]+/)
+    .map((line) => normalizeEnglish(line))
+    .filter((line) => line.length >= 3 && /[a-z]/.test(line) && line.split(" ").some((token) => token.length >= 4 && !prescriptionNoise.has(token)))
+    .slice(0, 30);
+}
+
+function identifyPrescriptionMedicines(catalog: CatalogMedicine[], query: string): MedicineCheck[] {
+  const lines = extractEnglishLines(query);
+  if (!lines.length) return [];
+  const checks: MedicineCheck[] = [];
+  for (const extractedName of lines) {
+    const match = findMatches(catalog, extractedName)[0];
+    if (match && match.confidence >= 0.58) {
+      if (!checks.some((check) => check.matchedId === match.id)) {
+        checks.push({ extractedName, availability: "available", confidence: match.confidence, matchedId: match.id, matchedName: match.en });
+      }
+    } else if (!checks.some((check) => check.extractedName === extractedName)) {
+      checks.push({ extractedName, availability: "not-found", confidence: 0 });
+    }
+  }
+  return checks;
 }
 
 export async function GET(request: Request) {
@@ -52,8 +114,9 @@ export async function GET(request: Request) {
   try {
     const db = getDb();
     const rows = await db.select().from(medicineCatalog).where(eq(medicineCatalog.active, true)).orderBy(desc(medicineCatalog.nameEn));
-    return Response.json({ source: "database", query, medicines: findMatches(rows.map(rowToMedicine), query) });
+    const catalog = rows.map(rowToMedicine);
+    return Response.json({ source: "database", language: "en", query, medicines: findMatches(catalog, query), checks: identifyPrescriptionMedicines(catalog, query) });
   } catch {
-    return Response.json({ source: "fallback-catalog", query, medicines: findMatches(fallbackCatalog, query) });
+    return Response.json({ source: "fallback-catalog", language: "en", query, medicines: findMatches(fallbackCatalog, query), checks: identifyPrescriptionMedicines(fallbackCatalog, query) });
   }
 }
