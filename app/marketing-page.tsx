@@ -193,7 +193,7 @@ export function MarketingPage({ kind }: { kind: MarketingPageKind }) {
       <aside className="marketing-sidebar">
         <MarketingBrand language={language} light />
         <nav className="marketing-nav" aria-label={isArabic ? "تنقل الصفحات" : "Page navigation"}>
-          {navItems.map(({ href, label, icon: Icon, active }) => <Link className={active ? "active" : ""} href={href} key={href}><Icon size={18} /><span>{label}</span></Link>)}
+          {navItems.map(({ href, label, icon: Icon, active }) => <Link className={active ? "active" : ""} aria-current={active ? "page" : undefined} href={href} key={href}><Icon size={18} /><span>{label}</span></Link>)}
         </nav>
         <div className="marketing-sidebar-bottom">
           <MarketingAvailability language={language} />
@@ -206,7 +206,7 @@ export function MarketingPage({ kind }: { kind: MarketingPageKind }) {
       <div className="marketing-main">
         <header className="marketing-topbar"><MarketingBrand language={language} /><div className="marketing-top-actions"><Link href="/search"><Search size={17} /><span>{isArabic ? "البحث" : "Search"}</span></Link><button type="button" onClick={toggleTheme} aria-label={theme === "light" ? (isArabic ? "تفعيل الوضع الداكن" : "Dark mode") : (isArabic ? "تفعيل الوضع الفاتح" : "Light mode")} title={theme === "light" ? "Dark mode" : "Light mode"}>{theme === "light" ? <Moon size={17} /> : <Sun size={17} />}</button><button type="button" onClick={toggleLanguage} aria-label={isArabic ? "التبديل إلى الإنجليزية" : "Switch to Arabic"} title={isArabic ? "English" : "العربية"}><Languages size={16} /><span>{isArabic ? "EN" : "عربي"}</span></button><Link href="/?openProfile=1"><UserRound size={17} />{isArabic ? "ملفي الصحي" : "My profile"}</Link></div><button className="marketing-mobile-menu-button" type="button" aria-label={isArabic ? "فتح القائمة" : "Open menu"} aria-expanded={mobileNavOpen} onClick={() => setMobileNavOpen((open) => !open)}>{mobileNavOpen ? <X size={19} /> : <Menu size={19} />}</button></header>
         <nav className={mobileNavOpen ? "marketing-mobile-nav open" : "marketing-mobile-nav"} aria-label={isArabic ? "تنقل الصفحات" : "Page navigation"} aria-hidden={!mobileNavOpen}>
-          {navItems.map(({ href, label, icon: Icon, active }) => <Link className={active ? "active" : ""} href={href} key={href} onClick={() => setMobileNavOpen(false)}><Icon size={17} /><span>{label}</span></Link>)}
+          {navItems.map(({ href, label, icon: Icon, active }) => <Link className={active ? "active" : ""} aria-current={active ? "page" : undefined} href={href} key={href} onClick={() => setMobileNavOpen(false)}><Icon size={17} /><span>{label}</span></Link>)}
         </nav>
         {mobileNavOpen ? <div className="marketing-mobile-backdrop" aria-hidden="true" onClick={() => setMobileNavOpen(false)} /> : null}
 
