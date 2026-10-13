@@ -573,6 +573,15 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (!mobileMenu) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileMenu]);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("openProfile") !== "1") return;
     const timer = window.setTimeout(() => {
@@ -679,7 +688,7 @@ function App() {
       <div className="site-background" aria-hidden="true" />
       <header className="site-header">
         <div className="header-inner">
-          <button className="mobile-menu-button" type="button" aria-label={language === "ar" ? "فتح القائمة" : "Open menu"} aria-expanded={mobileMenu} onClick={() => setMobileMenu(true)}><Menu size={22} /></button>
+          <button className="mobile-menu-button" type="button" aria-label={mobileMenu ? (language === "ar" ? "إغلاق القائمة" : "Close menu") : (language === "ar" ? "فتح القائمة" : "Open menu")} aria-expanded={mobileMenu} onClick={() => setMobileMenu((open) => !open)}>{mobileMenu ? <X size={22} /> : <Menu size={22} />}</button>
           <button className="header-brand-button" type="button" onClick={() => goTo("home")} aria-label={language === "ar" ? "العودة إلى الصفحة الرئيسية" : "Back to home"}><PharmacyMark compact language={language} /></button>
           <nav className={mobileMenu ? "main-nav open" : "main-nav"} aria-label={language === "ar" ? "التنقل الرئيسي" : "Main navigation"}>
             <button className="mobile-nav-close" type="button" aria-label={language === "ar" ? "إغلاق القائمة" : "Close menu"} onClick={() => setMobileMenu(false)}><X size={20} /></button>
@@ -704,6 +713,7 @@ function App() {
           </div>
         </div>
       </header>
+      {mobileMenu ? <div className="mobile-nav-backdrop" aria-hidden="true" onClick={() => setMobileMenu(false)} /> : null}
 
       <section id="home" className="public-hero">
         <div className="hero-overlay" />
