@@ -610,7 +610,13 @@ function App() {
 
   const goTo = (id: string) => {
     setMobileMenu(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const target = document.getElementById(id);
+    if (!target) {
+      router.push(id === "home" ? "/" : `/#${id}`);
+      return;
+    }
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState({}, "", id === "home" ? "/" : `/#${id}`);
   };
 
   const showToast = (message: string) => {

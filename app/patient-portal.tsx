@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
-import { ArrowLeft, CalendarDays, Check, FileImage, HeartPulse, LoaderCircle, MessageCircle, Paperclip, Phone, Plus, ShieldCheck, Trash2, Upload, UserRound, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, Check, FileImage, HeartPulse, LoaderCircle, Menu, MessageCircle, Paperclip, Phone, Plus, ShieldCheck, Trash2, Upload, UserRound, X } from "lucide-react";
 
 export type PatientPortalMode = "profile" | "chat" | "prescriptions" | "schedule";
 type Profile = { patientNumber?:number; fullName:string; age:string; gender:string; email:string; phone:string; whatsapp:boolean; city:string; emergencyPhone:string; height:string; weight:string; chronicDisease:string; chronicConditions:string[]; allergies:string; allergyDetails:string; medications:string; medicationDetails:string; symptoms:string; symptomDetails:string; pregnancyStatus:string; consent:boolean };
@@ -13,10 +13,36 @@ type ChatMessage = { id:number; sender:string; message:string; createdAt:string 
 const emptyProfile:Profile={fullName:"",age:"",gender:"",email:"",phone:"",whatsapp:false,city:"",emergencyPhone:"",height:"",weight:"",chronicDisease:"no",chronicConditions:[],allergies:"",allergyDetails:"",medications:"",medicationDetails:"",symptoms:"",symptomDetails:"",pregnancyStatus:"",consent:true};
 const fileLabels={xray:["الأشعة","أرفق صورة الأشعة ليراجعها الصيدلي."],ecg:["رسم القلب","مكان مخصص لتقرير أو صورة رسم القلب."],prescription:["روشتة طبية","أرفق الروشتة بشكل واضح."]} as const;const chronicOptions=["السكري","ضغط الدم","القلب","الربو","الكلى","الكبد","الغدة الدرقية"] as const;
 const titles={profile:["ملف المريض","ملفك الصحي في مساحة واضحة","راجع بياناتك الصحية وارفع مستنداتك في أماكنها."],chat:["رعاية مباشرة","تحدث مع الصيدلي","يرى الصيدلي بياناتك والمرفقات التي اخترت مشاركتها."],prescriptions:["وصفاتك الطبية","اسأل عن وصفة أو علاج","أرسل سؤالك وارفق الوصفة قبل طلب المساعدة."],schedule:["التزام أسهل","جدول مواعيد الجرعات","أنشئ مواعيد مرتبطة بملفك، مع تجهيز رابط واتساب للتذكير."]} as const;
+const portalNavItems=[
+  {href:"/",label:"الرئيسية"},
+  {href:"/profile",label:"ملفي الصحي",mode:"profile" as const},
+  {href:"/pharmacist-chat",label:"اسأل الصيدلي",mode:"chat" as const},
+  {href:"/medication-schedule",label:"مواعيد الجرعات",mode:"schedule" as const},
+  {href:"/prescriptions",label:"وصفاتي",mode:"prescriptions" as const},
+];
 
 const dateText=(v:string)=>{try{return new Intl.DateTimeFormat("ar-EG",{dateStyle:"medium"}).format(new Date(v));}catch{return "الآن";}};
 function readCompressedPortalImage(file:File):Promise<string>{return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=()=>reject(new Error("تعذر قراءة الصورة."));reader.onload=()=>{if(typeof reader.result!=="string"){reject(new Error("تعذر قراءة الصورة."));return}const source=reader.result;const image=new window.Image();image.onerror=()=>reject(new Error("صيغة الصورة غير مدعومة."));image.onload=()=>{const max=1400;const scale=Math.min(1,max/Math.max(image.naturalWidth,image.naturalHeight));const canvas=document.createElement("canvas");canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));const context=canvas.getContext("2d");if(!context){resolve(source);return}context.drawImage(image,0,0,canvas.width,canvas.height);const encode=(quality:number)=>canvas.toBlob(blob=>{if(!blob){resolve(source);return}const encoded=new FileReader();encoded.onerror=()=>reject(new Error("تعذر تجهيز الصورة."));encoded.onload=()=>{if(typeof encoded.result!=="string"){reject(new Error("تعذر تجهيز الصورة."));return}if(encoded.result.length>438000&&quality>0.42){encode(quality-0.1);return}resolve(encoded.result)};encoded.readAsDataURL(blob)},"image/jpeg",quality);encode(0.78)};image.src=source};reader.readAsDataURL(file)})}
-function Header({mode}:{mode:PatientPortalMode}){return <header className="portal-topbar"><Link href="/" className="portal-brand"><span className="portal-brand-mark"><Image src="/generated/pharmacy-emblem.png" alt="" width={44} height={44} unoptimized /></span><span><strong>صيدلية الشفاء</strong><small>رعاية أقرب إليك</small></span></Link><nav className="portal-nav"><Link href="/">الرئيسية</Link><Link className={mode==="profile"?"active":""} href="/profile">ملفي الصحي</Link><Link className={mode==="chat"?"active":""} href="/pharmacist-chat">اسأل الصيدلي</Link><Link className={mode==="schedule"?"active":""} href="/medication-schedule">مواعيد الجرعات</Link><Link className={mode==="prescriptions"?"active":""} href="/prescriptions">وصفاتي</Link></nav><a className="portal-signout" href="/signout-with-chatgpt?return_to=%2F"><UserRound size={15}/> تسجيل الخروج</a></header>}
+function Header({mode}:{mode:PatientPortalMode}){
+  const [mobileNavOpen,setMobileNavOpen]=useState(false);
+  useEffect(()=>{
+    if(!mobileNavOpen)return;
+    const previousOverflow=document.body.style.overflow;
+    document.body.style.overflow="hidden";
+    return()=>{document.body.style.overflow=previousOverflow};
+  },[mobileNavOpen]);
+  const closeMenu=()=>setMobileNavOpen(false);
+  return <header className="portal-topbar">
+    <Link href="/" className="portal-brand" onClick={closeMenu}><span className="portal-brand-mark"><Image src="/generated/pharmacy-emblem.png" alt="" width={44} height={44} unoptimized /></span><span><strong>صيدلية الشفاء</strong><small>رعاية أقرب إليك</small></span></Link>
+    <nav className="portal-nav" aria-label="التنقل في الملف الصحي">{portalNavItems.map(item=><Link key={item.href} className={item.mode===mode?"active":""} href={item.href}>{item.label}</Link>)}</nav>
+    <div className="portal-header-actions">
+      <button className="portal-mobile-menu-button" type="button" aria-label={mobileNavOpen?"إغلاق القائمة":"فتح القائمة"} aria-expanded={mobileNavOpen} aria-controls="portal-mobile-nav" onClick={()=>setMobileNavOpen(open=>!open)}>{mobileNavOpen?<X size={20}/>:<Menu size={20}/>}</button>
+      <a className="portal-signout" href="/signout-with-chatgpt?return_to=%2F"><UserRound size={15}/> تسجيل الخروج</a>
+    </div>
+    <nav id="portal-mobile-nav" className={mobileNavOpen?"portal-mobile-nav open":"portal-mobile-nav"} aria-label="تنقل الملف الصحي" aria-hidden={!mobileNavOpen}>{portalNavItems.map(item=><Link key={item.href} className={item.mode===mode?"active":""} href={item.href} onClick={closeMenu}>{item.label}</Link>)}</nav>
+    {mobileNavOpen?<div className="portal-mobile-backdrop" aria-hidden="true" onClick={closeMenu}/>:null}
+  </header>;
+}
 function Shell({mode,children,loading}:{mode:PatientPortalMode;children:ReactNode;loading:boolean}){const c=titles[mode];return <main className="portal-page" dir="rtl"><Header mode={mode}/><div className="portal-backdrop"/><section className="portal-hero"><div><span className="portal-eyebrow"><HeartPulse size={15}/> {c[0]}</span><h1>{c[1]}</h1><p>{c[2]}</p></div><div className="portal-hero-avatar"><span/><Image src="/generated/doctor-avatar-3d.png" alt="دكتورة ثلاثية الأبعاد" width={280} height={280} priority/></div></section>{loading?<div className="portal-loading"><LoaderCircle size={19}/> جاري تجهيز مساحتك الصحية...</div>:children}<footer className="portal-footer"><ShieldCheck size={16}/> معلوماتك الصحية خاصة، وهذه الواجهة للإرشاد العام ولا تغني عن الطبيب.</footer></main>}
 function Guest(){return <section className="portal-guest-card"><span><ShieldCheck size={28}/></span><div><h2>سجّل الدخول لفتح ملفك الصحي</h2><p>سيتم ربط البيانات والمرفقات بحسابك فقط، ولا نطلب كلمة مرور داخل الموقع.</p></div><a className="portal-primary" href="/signin-with-chatgpt?return_to=%2Fprofile">تسجيل الدخول الآمن <ArrowLeft size={17}/></a></section>}
 function Summary({p}:{p:Profile}){return <aside className="portal-summary-card"><span className="portal-card-icon"><UserRound size={20}/></span><span className="portal-card-kicker">بطاقة المريض</span><h2>{p.fullName||"ملف صحي جديد"}</h2><small className="portal-patient-number">رقم المريض #{p.patientNumber||"جديد"}</small><p>{p.email||"أكمل بياناتك الأساسية ليصبح الملف جاهزًا."}</p><div className="portal-summary-list"><span><b>العمر</b><strong>{p.age||"—"}</strong></span><span><b>الهاتف</b><strong dir="ltr">{p.phone||"—"}</strong></span><span><b>الأمراض المزمنة</b><strong>{p.chronicDisease==="yes"?(p.chronicConditions.join("، ")||"نعم"):"لا"}</strong></span><span><b>واتساب</b><strong>{p.whatsapp?"متصل":"غير مؤكد"}</strong></span></div><div className="portal-summary-note"><ShieldCheck size={15}/> لا تشارك بيانات الدخول مع أي شخص.</div></aside>}
